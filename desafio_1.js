@@ -10,7 +10,7 @@ class ProductManager {
 
     addProduct(title, description, price, thumbnail, code, stock) {
 
-        if (title === undefined || description === undefined || price === undefined || thumbnail === undefined || code === undefined || stock === undefined)
+        if (!title || !description || !price || !thumbnail || !code || !stock)
             return console.log('ERROR: provided data is not enough to add a product');
 
         if (this.products.find(product => product.code === code) !== undefined)
@@ -29,6 +29,7 @@ class ProductManager {
         ProductManager.lastId++;
 
         this.products.push(newProduct);
+        console.log(`Product ${title} added successfully`);
     }
 
     getProducts = () => this.products;
@@ -56,6 +57,7 @@ productManager.addProduct('Product 1', 'Description 1', 100, './image1.jpg');
 productManager.addProduct('Product 1', 'Description 1', 100, './image1.jpg', 1);
 
 // PRUEBAS DE AGREGADO CORRECTO
+console.log("\nPruebas de agregado correcto:");
 productManager.addProduct('Product 1', 'Description 1', 100, './image1.jpg', 500, 10);
 productManager.addProduct('Product 2', 'Description 2', 100, './image2.jpg', 560, 10);
 productManager.addProduct('Product 3', 'Description 3', 200, './image3.jpg', 320, 20);
@@ -78,4 +80,3 @@ console.log(product !== undefined ? product : ""); // No existe
 
 console.log("\nLista de productos:");
 console.log(productManager.getProducts());
-
