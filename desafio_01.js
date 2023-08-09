@@ -36,7 +36,7 @@ class ProductManager {
 
     getProductById = id => {
         let product = this.products.find(product => product.id === id);
-        if (product === undefined) {
+        if (!product) {
             console.log(`Product with id ${id} not found`);    
         }
         return product;
