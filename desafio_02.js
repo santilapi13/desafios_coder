@@ -88,9 +88,6 @@ class ProductManager {
             product[prop] = newValue;
         }
 
-        products = products.filter(product => product.id !== id);
-        products.push(product);
-
         fs.writeFileSync(this.#path, JSON.stringify(products, null, '\t'));
         console.log(`Product with id ${id} updated successfully`);
     }

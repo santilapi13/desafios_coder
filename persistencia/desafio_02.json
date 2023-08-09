@@ -1,14 +1,5 @@
 [
 	{
-		"title": "Producto numero 4",
-		"description": "Description 4",
-		"price": 150,
-		"thumbnail": "./image4.jpg",
-		"code": 501,
-		"stock": 15,
-		"id": 4
-	},
-	{
 		"title": "Product 2",
 		"description": "Esta es la nueva descripcion del producto 2",
 		"price": 100,
@@ -16,5 +7,14 @@
 		"code": 500,
 		"stock": 10,
 		"id": 2
+	},
+	{
+		"title": "Producto numero 4",
+		"description": "Description 4",
+		"price": 150,
+		"thumbnail": "./image4.jpg",
+		"code": 501,
+		"stock": 15,
+		"id": 4
 	}
 ]
