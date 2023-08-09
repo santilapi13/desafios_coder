@@ -16,10 +16,7 @@ class ProductManager {
         if (!title || !description || !price || !thumbnail || !code || !stock)
             return console.log('ERROR: provided data is not enough to add a product');
 
-        let products = [];
-        if (fs.existsSync(this.#path)) {
-            products = JSON.parse(fs.readFileSync(this.#path, 'utf-8'));
-        }
+        let products = this.getProducts();
 
         if (products.find(product => product.code === code) !== undefined)
             return console.log(`ERROR: cannot add product ${title} because code ${code} already exists`);
@@ -71,10 +68,7 @@ class ProductManager {
         if (prop === "id")
             return console.log('ERROR: cannot update id');
 
-        let products = [];
-        if (fs.existsSync(this.#path)) {
-            products = JSON.parse(fs.readFileSync(this.#path, 'utf-8'));
-        }
+        let products = this.getProducts();
 
         if (!this.getProductById(id)) {
             return;
@@ -102,10 +96,7 @@ class ProductManager {
     }
 
     deleteProduct = id => {
-        let products = [];
-        if (fs.existsSync(this.#path)) {
-            products = JSON.parse(fs.readFileSync(this.#path, 'utf-8'));
-        }
+        let products = this.getProducts();
 
         if (!this.getProductById(id)) {
             return;
