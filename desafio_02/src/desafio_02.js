@@ -8,7 +8,7 @@ class ProductManager {
     #path;
 
     constructor() {
-        this.#path = './persistencia/desafio_02.json';
+        this.#path = './../../persistencia/products.json';
     }
 
     addProduct(title, description, price, thumbnail, code, stock) {
@@ -107,11 +107,11 @@ class ProductManager {
 
 }
 
+module.exports = ProductManager;
 
-
+/*
 let productManager = new ProductManager();
-
-fs.unlinkSync('./persistencia/desafio_02.json');
+fs.unlinkSync('./../../persistencia/products.json');
 
 // PRUEBAS DE ERRORES POR FALTA DE DATOS
 console.log("\nPruebas de errores por falta de datos:");
@@ -167,3 +167,4 @@ productManager.updateProduct(2, null, { title: "Product 2", description: "Esta e
 
 console.log("\nLista de productos:");
 console.log(productManager.getProducts());
+*/
