@@ -1,7 +1,8 @@
 // Desafio 3 - Santiago Nicolas Lapiana
 
 const express = require('express');
-const ProductManager = require('./../../desafio_02/src/desafio_02');
+const path = require("path");
+const ProductManager = require(path.join(__dirname, "..", "..", "desafio_02", "src", "desafio_02"));
 const productManager = new ProductManager();
 
 const PORT = 3000;
