@@ -10,27 +10,28 @@ const app = express();
 
 
 app.get('/products', (req, res) => {
-
+    res.setHeader("Content-Type", "application/json");
     let resultado = productManager.getProducts();
     let {limit} = req.query;
 
     if (!limit)
-        return res.json({status: 'ok', data: resultado});
+        return res.status(200).json({status: 'ok', data: resultado});
 
     limit = parseInt(limit);
 
     if (isNaN(limit) || limit < 0)
-        return res.json({status: 'error', msg: 'Parameter <limit> must be a non-negative integer'});
+        return res.status(400).json({status: 'error', msg: 'Parameter <limit> must be a non-negative integer'});
 
     resultado = resultado.slice(0, limit);
-    res.json({status: 'ok', data: resultado});
+    res.status(200).json({status: 'ok', data: resultado});
 });
 
 app.get('/products/:pid', (req, res) => {
+    res.setHeader("Content-Type", "application/json");
     let pid = req.params.pid;
 
     if (isNaN(pid) || pid <= 0)
-        return res.json({status: 'error', msg: 'Parameter <limit> must be a positive integer'});
+        return res.status(400).json({status: 'error', msg: 'Parameter <limit> must be a positive integer'});
 
     pid = parseInt(pid);
     const resultado = productManager.getProductById(pid);
@@ -38,13 +39,14 @@ app.get('/products/:pid', (req, res) => {
     console.log(resultado);
 
     if (!resultado)
-        return res.json({status: 'error', msg: 'Error - Product not found'});
+        return res.status(404).json({status: 'error', msg: 'Error - Product not found'});
 
-    res.json({status: 'ok', data: resultado});
+    res.status(200).json({status: 'ok', data: resultado});
 });
 
 app.get('*', (req, res) => {
-    res.send('error 404 - page not found');
+    res.setHeader("Content-Type", "text/plain");
+    res.status(404).send('error 404 - page not found');
 });
 
 
