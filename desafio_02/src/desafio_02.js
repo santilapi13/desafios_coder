@@ -1,6 +1,7 @@
 // Desafio 2 - Santiago Nicolas Lapiana
 
 const fs = require('fs');
+const path = require("path");
 
 class ProductManager {
 
@@ -8,7 +9,7 @@ class ProductManager {
     #path;
 
     constructor() {
-        this.#path = './../../persistencia/products.json';
+        this.#path = path.join(__dirname, "..", "..","persistencia", "products.json");
     }
 
     addProduct(title, description, price, thumbnail, code, stock) {

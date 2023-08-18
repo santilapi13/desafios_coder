@@ -29,11 +29,11 @@ app.get('/products', (req, res) => {
 app.get('/products/:pid', (req, res) => {
     res.setHeader("Content-Type", "application/json");
     let pid = req.params.pid;
+    pid = parseInt(pid);
 
     if (isNaN(pid) || pid <= 0)
         return res.status(400).json({status: 'error', msg: 'Parameter <limit> must be a positive integer'});
 
-    pid = parseInt(pid);
     const resultado = productManager.getProductById(pid);
     console.log(pid);
     console.log(resultado);
