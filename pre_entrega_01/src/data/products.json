@@ -2,45 +2,47 @@
 	{
 		"id": 1,
 		"title": "Oreo",
-        "description": "Paquete de oreos.",
-        "code": 500,
-        "price": 100,
-        "status": true,
-        "stock": 10,
-        "category": "Galletitas",
-        "thumbnails": []
+		"description": "Galletitas Oreo.",
+		"code": "595",
+		"price": 100,
+		"status": true,
+		"stock": 10,
+		"category": "Galletitas",
+		"thumbnails": []
 	},
 	{
 		"id": 2,
 		"title": "Pepitos",
-        "description": "Paquete de pepitos.",
-        "code": 501,
-        "price": 150,
-        "status": true,
-        "stock": 10,
-        "category": "Galletitas",
-        "thumbnails": []
+		"description": "Paquete de pepitos.",
+		"code": 501,
+		"price": 150,
+		"status": true,
+		"stock": 10,
+		"category": "Galletitas",
+		"thumbnails": []
 	},
 	{
 		"id": 3,
 		"title": "Arlistan",
 		"description": "Frasco de cafe Arlistan.",
-        "code": 502,
-        "price": 500,
-        "status": true,
-        "stock": 10,
-        "category": "Cafe",
-        "thumbnails": []
+		"code": 502,
+		"price": 500,
+		"status": true,
+		"stock": 10,
+		"category": "Cafe",
+		"thumbnails": []
 	},
 	{
-		"id": 4,
-		"title": "Dolca",
-		"description": "Frasco de cafe Dolca.",
-        "code": 503,
-        "price": 250,
-        "status": true,
-        "stock": 10,
-        "category": "Cafe",
-        "thumbnails": []
+		"title": "Cabrales",
+		"description": "Frasco de cafe Cabrales.",
+		"code": 597,
+		"price": 500,
+		"status": true,
+		"stock": 10,
+		"category": "Cafe",
+		"thumbnails": [
+			"estoEsUnaImagen.jpg"
+		],
+		"id": 4
 	}
 ]

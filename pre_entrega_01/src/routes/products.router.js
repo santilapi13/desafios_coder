@@ -5,11 +5,11 @@ import ProductManager from '../models/productManager.js';
 const productManager = new ProductManager();
 
 let validateProps = (body, ...validator) => {
-    let keys = Object.keys(body);
-    for (prop in validator) {
-        if (!keys.includes(validator[prop]))
+    let newProductProps = Object.keys(body);
+    validator.forEach((toValidateProp) => {
+        if (!newProductProps.includes(toValidateProp))
             return false;
-    }
+    });
     return true;
 }
 
@@ -50,6 +50,7 @@ router.get('/:pid', (req, res) => {
 
 
 router.post('/', (req, res) => {
+    res.setHeader("Content-Type", "application/json");
     let product = req.body;
 
     if (!validateProps(product, 'title', 'description', 'code', 'price', 'status', 'stock', 'category'))
@@ -70,19 +71,20 @@ router.post('/', (req, res) => {
 
 router.put('/:pid', (req, res) => {
     let {pid} = req.params;
-    let {product} = req.body;
+    let product = req.body;
     let validator = ['title', 'description', 'code', 'price', 'status', 'stock', 'category'];
+    pid = parseInt(pid);
 
     if (!productManager.getProductById(pid))
         return res.status(404).json({status: 'error', msg: 'Error - Product not found'});
 
-    for (prop in Object.keys(product)) {
-        if (!validator.includes(prop))
-            return res.status(400).json({status: 'error', msg: `Error - Invalid property: ${prop}`});
-    }
+    Object.keys(product).forEach(toValidateProp => {
+        if (!validator.includes(toValidateProp))
+            return res.status(400).json({status: 'error', msg: `Error - Invalid property: ${toValidateProp}`});
+    });
 
     let products = productManager.getProducts();
-    if (products.find(p => p.code === product.code) !== undefined)
+    if (product.code && products.find(currentProduct => currentProduct.code === product.code) !== undefined)
             return res.status(400).json({status: 'error', msg: 'Error - Product code already exists'});
 
     if (product.price)
@@ -102,6 +104,7 @@ router.put('/:pid', (req, res) => {
 router.delete('/:pid', (req, res) => {
     let {pid} = req.params;
 
+    pid = parseInt(pid);
     if (!productManager.getProductById(pid))
         return res.status(404).json({status: 'error', msg: 'Error - Product not found'});
 

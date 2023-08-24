@@ -4,14 +4,13 @@ import __dirname from '../util.js';
 
 class ProductManager {
 
-    static lastId = 1;    // Id autoincrementable
     #path;
 
     constructor() {
         this.#path = path.join(__dirname, "data", "products.json");
     }
 
-    addProduct = ({title, description, code, price, status = true, stock, category, thumbnails}) => {
+    addProduct = ({title, description, code, price, status = true, stock, category, thumbnails = []}) => {
         let newProduct = {
             title,
             description,
@@ -23,8 +22,9 @@ class ProductManager {
             thumbnails,
         };
 
-        newProduct.id = ProductManager.lastId;
-        ProductManager.lastId++;
+        // TODO: Revisar como se asigna el ID. Lo ideal sería guardarlo en algún lugar y no buscar el de mayor valor.
+        let lastId = this.getProducts().reduce((max, product) => product.id > max ? product.id : max, 0);
+        newProduct.id = lastId + 1;
 
         let products = this.getProducts();
 
@@ -50,9 +50,11 @@ class ProductManager {
         let products = this.getProducts();
         let product = this.getProductById(id);
 
-        for (prop in productArr) {
-            product[prop.key] = prop.value;
-        }
+        productArr.forEach(newProp => {
+            product[newProp[0]] = newProp[1];
+        });
+
+        products = products.map(p => p.id === id ? product : p);
 
         fs.writeFileSync(this.#path, JSON.stringify(products, null, '\t'));
     }
