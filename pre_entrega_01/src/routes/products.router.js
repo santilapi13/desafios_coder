@@ -70,7 +70,32 @@ router.post('/', (req, res) => {
 
 router.put('/:pid', (req, res) => {
     let {pid} = req.params;
-    // TODO: Implementar actualizacion de producto por ID
+    let {product} = req.body;
+    let validator = ['title', 'description', 'code', 'price', 'status', 'stock', 'category'];
+
+    if (!productManager.getProductById(pid))
+        return res.status(404).json({status: 'error', msg: 'Error - Product not found'});
+
+    for (prop in Object.keys(product)) {
+        if (!validator.includes(prop))
+            return res.status(400).json({status: 'error', msg: `Error - Invalid property: ${prop}`});
+    }
+
+    let products = productManager.getProducts();
+    if (products.find(p => p.code === product.code) !== undefined)
+            return res.status(400).json({status: 'error', msg: 'Error - Product code already exists'});
+
+    if (product.price)
+        product.price = parseFloat(product.price);
+
+    if (product.status)
+        product.status = !!product.status;
+
+    if (product.stock)
+        product.stock = parseInt(product.stock);
+
+    productManager.updateProduct(pid, Object.entries(product));
+    res.status(200).json({status: 'ok', msg: `Product with id ${pid} updated successfully`});
 });
 
 

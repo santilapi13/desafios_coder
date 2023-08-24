@@ -46,32 +46,12 @@ class ProductManager {
         return product;
     };
 
-    // TODO: Cambiar para que se actualice de acuerdo a un objeto pasado por parámetro
-    updateProduct = (id, prop, newValue) => {
-        if (!newValue)
-            return console.log('ERROR: provided data is not enough to update a product');
-
-        if (prop === "id")
-            return console.log('ERROR: cannot update id');
-
+    updateProduct = (id, productArr) => {
         let products = this.getProducts();
+        let product = this.getProductById(id);
 
-        if (!this.getProductById(id)) {
-            return;
-        }
-
-        let product = products.find(product => product.id === id);
-        if (prop === null) {
-            for (const prop in newValue) {
-                if (!product[prop])
-                    return console.log(`ERROR: cannot update product with id ${id} because property ${prop} does not exist`);
-                if (prop !== "id")
-                    product[prop] = newValue[prop];
-            }
-        } else {
-            if (!product[prop])
-                return console.log(`ERROR: cannot update product with id ${id} because property ${prop} does not exist`);
-            product[prop] = newValue;
+        for (prop in productArr) {
+            product[prop.key] = prop.value;
         }
 
         fs.writeFileSync(this.#path, JSON.stringify(products, null, '\t'));
