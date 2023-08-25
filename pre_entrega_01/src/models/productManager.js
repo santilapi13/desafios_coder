@@ -11,7 +11,6 @@ class ProductManager {
     }
 
     addProduct = ({title, description, code, price, status = true, stock, category, thumbnails = []}) => {
-
         let products = this.getProducts();
         products.lastId++;
 

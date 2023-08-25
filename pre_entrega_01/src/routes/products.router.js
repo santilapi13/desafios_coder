@@ -38,7 +38,7 @@ router.get('/:pid', (req, res) => {
     pid = parseInt(pid);
 
     if (isNaN(pid) || pid <= 0)
-        return res.status(400).json({status: 'error', msg: 'Parameter <limit> must be a positive integer'});
+        return res.status(400).json({status: 'error', msg: 'Product Id must be a positive integer'});
 
     const resultado = productManager.getProductById(pid);
 
