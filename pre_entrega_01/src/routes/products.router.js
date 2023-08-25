@@ -6,17 +6,17 @@ const productManager = new ProductManager();
 
 let validateProps = (body, ...validator) => {
     let newProductProps = Object.keys(body);
-    validator.forEach((toValidateProp) => {
+    for (const toValidateProp of validator) {
         if (!newProductProps.includes(toValidateProp))
             return false;
-    });
+    };
     return true;
 }
 
 
 router.get('/', (req, res) => {
     res.setHeader("Content-Type", "application/json");
-    let resultado = productManager.getProducts();
+    let resultado = productManager.getProducts().productsList;
     let {limit} = req.query;
 
     if (!limit)
@@ -54,9 +54,11 @@ router.post('/', (req, res) => {
     let product = req.body;
 
     if (!validateProps(product, 'title', 'description', 'code', 'price', 'status', 'stock', 'category'))
-        res.status(400).json({status: 'error', msg: 'Error - Missing parameters'})
+        return res.status(400).json({status: 'error', msg: 'Error - Missing parameters'})
 
-    let products = productManager.getProducts();
+    let products = productManager.getProducts().productsList;
+
+    product.code += "";
     if (products.find(p => p.code === product.code) !== undefined)
             return res.status(400).json({status: 'error', msg: 'Error - Product code already exists'});
 
@@ -70,6 +72,7 @@ router.post('/', (req, res) => {
 
 
 router.put('/:pid', (req, res) => {
+    res.setHeader("Content-Type", "application/json");
     let {pid} = req.params;
     let product = req.body;
     let validator = ['title', 'description', 'code', 'price', 'status', 'stock', 'category'];
@@ -78,14 +81,18 @@ router.put('/:pid', (req, res) => {
     if (!productManager.getProductById(pid))
         return res.status(404).json({status: 'error', msg: 'Error - Product not found'});
 
-    Object.keys(product).forEach(toValidateProp => {
+    for (const toValidateProp of Object.keys(product)) {
         if (!validator.includes(toValidateProp))
             return res.status(400).json({status: 'error', msg: `Error - Invalid property: ${toValidateProp}`});
-    });
+    }
 
-    let products = productManager.getProducts();
-    if (product.code && products.find(currentProduct => currentProduct.code === product.code) !== undefined)
+    let products = productManager.getProducts().productsList;
+    
+    if (product.code) {
+        product.code += "";
+        if (products.find(currentProduct => currentProduct.code === product.code) !== undefined)
             return res.status(400).json({status: 'error', msg: 'Error - Product code already exists'});
+    }
 
     if (product.price)
         product.price = parseFloat(product.price);
@@ -102,6 +109,7 @@ router.put('/:pid', (req, res) => {
 
 
 router.delete('/:pid', (req, res) => {
+    res.setHeader("Content-Type", "application/json");
     let {pid} = req.params;
 
     pid = parseInt(pid);

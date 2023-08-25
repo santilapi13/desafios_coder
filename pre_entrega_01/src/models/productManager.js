@@ -11,7 +11,12 @@ class ProductManager {
     }
 
     addProduct = ({title, description, code, price, status = true, stock, category, thumbnails = []}) => {
+
+        let products = this.getProducts();
+        products.lastId++;
+
         let newProduct = {
+            id: products.lastId,
             title,
             description,
             code,
@@ -22,39 +27,38 @@ class ProductManager {
             thumbnails,
         };
 
-        // TODO: Revisar como se asigna el ID. Lo ideal sería guardarlo en algún lugar y no buscar el de mayor valor.
-        let lastId = this.getProducts().reduce((max, product) => product.id > max ? product.id : max, 0);
-        newProduct.id = lastId + 1;
-
-        let products = this.getProducts();
-
-        products.push(newProduct);
+        products.productsList.push(newProduct);
         fs.writeFileSync(this.#path, JSON.stringify(products, null, '\t'));
     }
 
     getProducts = () => {
-        let products = [];
+        let products = {
+            lastId: 0,
+            productsList: []
+        };
+
         if (fs.existsSync(this.#path)) {
             products = JSON.parse(fs.readFileSync(this.#path, 'utf-8'));
         }
+
         return products;
     };
 
     getProductById = id => {
-        let product = this.getProducts().find(product => product.id === id);
+        let product = this.getProducts().productsList.find(product => product.id === id);
 
         return product;
     };
 
     updateProduct = (id, productArr) => {
-        let products = this.getProducts();
         let product = this.getProductById(id);
 
         productArr.forEach(newProp => {
             product[newProp[0]] = newProp[1];
         });
 
-        products = products.map(p => p.id === id ? product : p);
+        let products = this.getProducts();
+        products.productsList = products.productsList.map(p => p.id === id ? product : p);
 
         fs.writeFileSync(this.#path, JSON.stringify(products, null, '\t'));
     }
@@ -62,7 +66,7 @@ class ProductManager {
     deleteProduct = id => {
         let products = this.getProducts();
 
-        products = products.filter(product => product.id !== id);
+        products.productsList = products.productsList.filter(product => product.id !== id);
 
         fs.writeFileSync(this.#path, JSON.stringify(products, null, '\t'));
     }
