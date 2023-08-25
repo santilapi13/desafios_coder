@@ -1,5 +1,5 @@
 {
-	"lastId": 4,
+	"lastId": 6,
 	"cartsList": [
 		{
 			"id": 1,
@@ -11,7 +11,12 @@
 		},
 		{
 			"id": 3,
-			"products": []
+			"products": [
+				{
+					"id": 6,
+					"quantity": 1
+				}
+			]
 		},
 		{
 			"id": 4,
@@ -25,6 +30,19 @@
 					"quantity": 3
 				}
 			]
+		},
+		{
+			"id": 5,
+			"products": [
+				{
+					"id": 5,
+					"quantity": 4
+				}
+			]
+		},
+		{
+			"id": 6,
+			"products": []
 		}
 	]
 }
