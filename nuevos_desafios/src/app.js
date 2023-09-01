@@ -3,12 +3,16 @@ import {router as productsRouter} from './routes/products.router.js';
 import {router as cartsRouter} from './routes/carts.router.js';
 import {router as viewsRouter} from './routes/views.router.js';
 import handlebars from 'express-handlebars';
+import __dirname from './util.js';
+import {Server} from 'socket.io'
 
 const PORT = 8080;
 const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
+
+app.use(express.static(__dirname + '/public'));
 
 app.engine("handlebars", handlebars.engine());
 app.set("views", __dirname + "/views");
@@ -23,7 +27,12 @@ app.get('*', (req, res) => {
     res.status(404).send('error 404 - page not found');
 });
 
-app.listen(PORT, () => {
+const serverExpress = app.listen(PORT, () => {
     console.log(`Server corriendo en puerto ${PORT}`);
 });
 
+const serverSocket = new Server(serverExpress);
+
+serverSocket.on('connection', (socket) => {
+    console.log(`Se conecto un cliente con id ${socket.id}`);
+});

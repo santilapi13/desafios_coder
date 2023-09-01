@@ -68,6 +68,7 @@ router.post('/', (req, res) => {
 
     productManager.addProduct(product);
     res.status(201).json({status: 'ok', msg: `Product ${product.title} added successfully`});
+    
 });
 
 
