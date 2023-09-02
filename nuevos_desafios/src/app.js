@@ -31,8 +31,8 @@ const serverExpress = app.listen(PORT, () => {
     console.log(`Server corriendo en puerto ${PORT}`);
 });
 
-const serverSocket = new Server(serverExpress);
+export const io = new Server(serverExpress);
 
-serverSocket.on('connection', (socket) => {
+io.on('connection', (socket) => {
     console.log(`Se conecto un cliente con id ${socket.id}`);
 });

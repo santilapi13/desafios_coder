@@ -1,5 +1,6 @@
 import {Router} from 'express';
 export const router = Router();
+import {io} from "../app.js";
 import ProductManager from '../models/productManager.js';
 
 const productManager = new ProductManager();
@@ -67,8 +68,8 @@ router.post('/', (req, res) => {
     product.stock = parseInt(product.stock);
 
     productManager.addProduct(product);
+    io.emit('list-updated', {products: productManager.getProducts().productsList, msg: `Product ${product.title} added.`});
     res.status(201).json({status: 'ok', msg: `Product ${product.title} added successfully`});
-    
 });
 
 
@@ -105,6 +106,7 @@ router.put('/:pid', (req, res) => {
         product.stock = parseInt(product.stock);
 
     productManager.updateProduct(pid, Object.entries(product));
+    io.emit('list-updated', {products: productManager.getProducts().productsList, msg: `Product with id ${pid} updated.`});
     res.status(200).json({status: 'ok', msg: `Product with id ${pid} updated successfully`});
 });
 
@@ -118,5 +120,6 @@ router.delete('/:pid', (req, res) => {
         return res.status(404).json({status: 'error', msg: 'Error - Product not found'});
 
     productManager.deleteProduct(pid);
+    io.emit('list-updated', {products: productManager.getProducts().productsList, msg: `Product with id ${pid} deleted.`});
     res.status(200).json({status: 'ok', msg: `Product with id ${pid} deleted successfully`});
 });
