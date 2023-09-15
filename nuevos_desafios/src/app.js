@@ -31,6 +31,13 @@ const serverExpress = app.listen(PORT, () => {
     console.log(`Server corriendo en puerto ${PORT}`);
 });
 
+mongoose.connect('mongodb+srv://santilapiana02:aHGwx1LOTFj9kMur@e-commerce.un2yreb.mongodb.net/?retryWrites=true&w=majority', (error) => {
+    if (error) {
+        console.log("Cannot connect to database: " + error);
+        process.exit();
+    }
+});
+
 export const io = new Server(serverExpress);
 
 io.on('connection', (socket) => {

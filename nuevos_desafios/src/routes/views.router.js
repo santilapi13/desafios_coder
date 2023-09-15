@@ -1,7 +1,13 @@
 import {Router} from 'express';
 export const router = Router();
-import ProductManager from '../models/productManager.js';
 
+
+
+
+
+// Ignorar lo que sigue: implementacion vieja con File System
+/*
+import ProductManager from '../models/productManager.js';
 const productManager = new ProductManager();
 
 router.get('/home', (req,res) => {
@@ -19,3 +25,4 @@ router.get('/realtimeproducts', (req,res) => {
         products: productManager.getProducts().productsList
     });
 });
+*/

@@ -1,7 +1,14 @@
 import {Router} from 'express';
 export const router = Router();
-import CartManager from '../models/cartManager.js';
 
+
+
+
+
+
+// Ignorar lo que sigue: implementacion vieja con File System
+/*
+import CartManager from '../models/cartManager.js';
 const cartManager = new CartManager();
 
 router.post('/', (req, res) => {
@@ -48,3 +55,4 @@ router.post('/:cid/product/:pid', (req, res) => {
     cartManager.addProductToCart(cid, pid);
     res.status(200).json({status: 'ok', msg: 'Product added to cart successfully'});
 });
+*/
