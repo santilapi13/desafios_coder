@@ -12,9 +12,12 @@ router.get('/home', async(req,res) => {
 
 router.get('/realtimeproducts', async(req,res) => {
     res.setHeader("Content-Type","text/html");
+    const products = await productModel.find();
+    const productsPlain = products.map(product => product.toObject());
+
     res.status(200).render("realtimeproducts", {
         title: "Productos en tiempo real",
-        products: await productModel.find()
+        products: productsPlain
     });
 });
 

@@ -10,7 +10,7 @@ socket.on("list-updated", data => {
 		const productItem = document.createElement('li');
 		productItem.innerHTML = `
 			<ul>
-				<li>ID: ${product.id}</li>
+				<li>ID: ${product._id}</li>
 				<li>Nombre: ${product.title}</li>
 				<li>Precio: ${product.price}</li>
 				<li>Código: ${product.code}</li>
