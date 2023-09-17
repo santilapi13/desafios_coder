@@ -4,9 +4,11 @@ export const router = Router();
 
 router.get('/home', async(req,res) => {
     res.setHeader("Content-Type","text/html");
+    const products = await productModel.find();
+    const productsPlain = products.map(product => product.toObject());
 	res.status(200).render("home", {
 		title: "Lista de Productos",
-        products: await productModel.find()
+        products: productsPlain
 	});
 });
 
