@@ -2,6 +2,7 @@ import express from 'express';
 import {router as productsRouter} from './routes/products.router.js';
 import {router as cartsRouter} from './routes/carts.router.js';
 import {router as viewsRouter} from './routes/views.router.js';
+import {router as chatRouter, chatSocket} from './routes/chat.router.js';
 import handlebars from 'express-handlebars';
 import __dirname from './util.js';
 import {Server} from 'socket.io'
@@ -21,6 +22,7 @@ app.set("view engine", "handlebars");
 
 app.use("/api/products", productsRouter);
 app.use("/api/carts", cartsRouter);
+app.use("/chat", chatRouter);
 app.use("/", viewsRouter);
 
 app.get('*', (req, res) => {
@@ -41,5 +43,6 @@ mongoose.connect('mongodb+srv://santilapiana02:aHGwx1LOTFj9kMur@e-commerce.un2yr
 export const io = new Server(serverExpress);
 
 io.on('connection', (socket) => {
-    console.log(`Se conecto un cliente con id ${socket.id}`);
+    console.log(`Client with id ${socket.id} has connected`);
+    chatSocket(io, socket);
 });
