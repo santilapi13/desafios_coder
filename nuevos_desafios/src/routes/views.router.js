@@ -1,7 +1,22 @@
 import {Router} from 'express';
+import { productModel } from '../dao/models/product.model.js';
 export const router = Router();
 
+router.get('/home', async(req,res) => {
+    res.setHeader("Content-Type","text/html");
+	res.status(200).render("home", {
+		title: "Lista de Productos",
+        products: await productModel.find()
+	});
+});
 
+router.get('/realtimeproducts', async(req,res) => {
+    res.setHeader("Content-Type","text/html");
+    res.status(200).render("realtimeproducts", {
+        title: "Productos en tiempo real",
+        products: await productModel.find()
+    });
+});
 
 
 

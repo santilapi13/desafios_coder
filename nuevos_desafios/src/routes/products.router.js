@@ -1,5 +1,5 @@
 import {Router} from 'express';
-import productModel from '..dao/models/product.model.js';
+import { productModel } from "../dao/models/product.model.js";
 import mongoose from "mongoose"
 export const router = Router();
 import {io} from "../app.js";
@@ -33,10 +33,10 @@ router.get('/', async(req, res) => {
 router.get('/:pid', async(req, res) => {
     res.setHeader("Content-Type", "application/json");
     let pid = req.params.pid;
-    pid = parseInt(pid);
 
+    try {
     if (!mongoose.Types.ObjectId.isValid(pid))    
-		return res.status(400).json({error:"Error - Invalid id"});
+		return res.status(400).json({error:"Error - Invalid ID format"});
 
     const resultado = await productModel.findById(pid);
 
@@ -44,6 +44,9 @@ router.get('/:pid', async(req, res) => {
         return res.status(404).json({status: 'error', msg: 'Error - Product not found'});
 
     res.status(200).json({status: 'ok', data: resultado});
+    } catch (err) {
+        res.status(500).json({error: "Unexpected error", detalle: err.message});
+    }
 });
 
 
@@ -52,7 +55,7 @@ router.post('/', async(req, res) => {
     let product = req.body;
 
     if (!validateProps(product, 'title', 'description', 'code', 'price', 'status', 'stock', 'category'))
-        return res.status(400).json({status: 'error', msg: 'Error - Missing parameters'})
+        return res.status(400).json({status: 'error', msg: 'Error - Missing parameters (title, description, code, price, status, stock, category are required)'})
 
     let codeProduct = await productModel.findOne({code: product.code});
     if (codeProduct)
@@ -67,7 +70,7 @@ router.post('/', async(req, res) => {
         io.emit('list-updated', {products: await productModel.find(), msg: `Product ${product.title} added.`});
         res.status(201).json({status: 'ok', msg: `Product ${newProduct} added successfully`});
     } catch (error) {
-        res.status(500).json({error: "Unexpected error", detalle: error.msg});
+        res.status(500).json({error: "Unexpected error", detalle: error.message});
     }
 });
 
@@ -76,13 +79,13 @@ router.put('/:pid', async(req, res) => {
     res.setHeader("Content-Type", "application/json");
     let {pid} = req.params;
     let product = req.body;
-    let validator = ['title', 'description', 'code', 'price', 'status', 'stock', 'category'];
-    pid = parseInt(pid);
+    let validator = ['title', 'description', 'code', 'price', 'status', 'stock', 'category', 'thumbnails'];
 
     if (!mongoose.Types.ObjectId.isValid(pid))    
 		return res.status(400).json({error:"Error - Invalid id"});
 
-    if (!await productModel.findById(pid))
+    let updatedProduct = await productModel.findById(pid);
+    if (!updatedProduct)
         return res.status(404).json({status: 'error', msg: 'Error - Product not found'});
 
     for (const toValidateProp of Object.keys(product)) {
@@ -94,18 +97,27 @@ router.put('/:pid', async(req, res) => {
     if (codeProduct)
         return res.status(400).json({status: 'error', msg: `Error - Product code ${product.code} already exists`});
 
-    if (product.price)
+
+    if (product.price) {
         product.price = parseFloat(product.price);
+        if (isNaN(product.price))
+            return res.status(400).json({status: 'error', msg: `Error - Invalid price: ${product.price}`});
+    }
 
     if (product.status)
         product.status = !!product.status;
 
-    if (product.stock)
+    if (product.stock) {
         product.stock = parseInt(product.stock);
+        if (isNaN(product.stock))
+            return res.status(400).json({status: 'error', msg: `Error - Invalid stock: ${product.stock}`});
+    }
 
-    // TODO: Completar los campos que no se actualizaran con los anteriores.
+    Object.entries(product).forEach(([key, value]) => {
+        updatedProduct[key] = value;
+    });
 
-    let resultado = await productModel.findByIdAndUpdate(pid, product);
+    let resultado = await productModel.findByIdAndUpdate(pid, updatedProduct);
 
     io.emit('list-updated', {products: await productModel.find(), msg: `Product with id ${pid} updated.`});
     res.status(200).json({status: 'ok', msg: `Product with id ${pid} updated successfully: ${resultado}`});
@@ -116,17 +128,19 @@ router.delete('/:pid', async(req, res) => {
     res.setHeader("Content-Type", "application/json");
     let {pid} = req.params;
 
-    pid = parseInt(pid);
-
+    try {
     if (!mongoose.Types.ObjectId.isValid(pid))    
 		return res.status(400).json({error:"Error - Invalid id"});
 
     if (!await productModel.findById(pid))
         return res.status(404).json({status: 'error', msg: 'Error - Product not found'});
 
-    let resultado = await usuarioModelo.deleteOne({_id: id});
+    let resultado = await productModel.deleteOne({_id: pid});
     io.emit('list-updated', {products: await productModel.find(), msg: `Product with id ${pid} deleted.`});
     res.status(200).json({status: 'ok', msg: `Product with id ${pid} deleted successfully: ${resultado}`});
+    } catch (err) {
+        res.status(500).json({error: "Unexpected error", detalle: err.message});
+    }
 });
 
 

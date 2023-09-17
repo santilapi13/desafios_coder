@@ -5,6 +5,7 @@ import {router as viewsRouter} from './routes/views.router.js';
 import handlebars from 'express-handlebars';
 import __dirname from './util.js';
 import {Server} from 'socket.io'
+import mongoose from "mongoose"
 
 const PORT = 8080;
 const app = express();
@@ -31,12 +32,11 @@ const serverExpress = app.listen(PORT, () => {
     console.log(`Server corriendo en puerto ${PORT}`);
 });
 
-mongoose.connect('mongodb+srv://santilapiana02:aHGwx1LOTFj9kMur@e-commerce.un2yreb.mongodb.net/?retryWrites=true&w=majority', (error) => {
-    if (error) {
-        console.log("Cannot connect to database: " + error);
+mongoose.connect('mongodb+srv://santilapiana02:aHGwx1LOTFj9kMur@e-commerce.un2yreb.mongodb.net/?retryWrites=true&w=majority')
+    .catch((error) => {
+        console.log("Cannot connect to database " + error);
         process.exit();
-    }
-});
+    });
 
 export const io = new Server(serverExpress);
 
