@@ -15,19 +15,56 @@ let validateProps = (body, ...validator) => {
 
 router.get('/', async(req, res) => {
     res.setHeader("Content-Type", "application/json");
-    let resultado = await productModel.find();
-    let {limit} = req.query;
 
-    if (!limit)
-        return res.status(200).json({status: 'ok', data: resultado});
+    let {limit, page, sort, query} = req.query;
 
-    limit = parseInt(limit);
-
+    limit = limit ? parseInt(limit) : 10;
     if (isNaN(limit) || limit < 0)
         return res.status(400).json({status: 'error', msg: 'Parameter <limit> must be a non-negative integer'});
 
-    resultado = resultado.slice(0, limit);
-    res.status(200).json({status: 'ok', data: resultado});
+    page = page ? parseInt(page) : 1;
+    if (isNaN(page) || page <= 0)
+        return res.status(400).json({status: 'error', msg: 'Parameter <page> must be a positive integer'});
+
+    if (sort && !['asc', 'desc'].includes(sort))
+        return res.status(400).json({status: 'error', msg: 'Parameter <sort> must be one of the following: asc, desc'});
+    let sortBy = sort ? {price: sort} : {};
+
+    // query puede ser available o puede ser la categoria por la cual filtrar.
+    let queryCondition = {};
+    if (query)
+        queryCondition = query === 'available' ? {status: true} : {category: query};
+
+    let resultado;
+    try {
+        resultado = await productModel.paginate(queryCondition, {limit, lean: true, page, sortBy});
+    } catch (error) {
+        return res.status(500).json({status: "error", msg: error.message});
+    }
+
+    let {
+        totalPages,
+        hasPrevPage,
+        hasNextPage,
+        prevPage,
+        nextPage
+    } = resultado;
+    
+    const baseUrl = req.protocol + '://' + req.get('host') + req.baseUrl; 
+    const prevLink = hasPrevPage ? `${baseUrl}?page=${prevPage}&limit=${limit}${sort ?"&sort=" + sort : ""}${query ? "&query=" + query: ""}` : null;
+    const nextLink = hasNextPage ? `${baseUrl}?page=${nextPage}&limit=${limit}${sort ?"&sort=" + sort : ""}${query ? "&query=" + query: ""}` : null;
+
+    res.status(200).json({
+        status: 'success', 
+        payload: resultado.docs,
+        totalPages,
+        hasPrevPage,
+        hasNextPage,
+        prevPage,
+        nextPage,
+        prevLink,
+        nextLink
+    });
 });
 
 router.get('/:pid', async(req, res) => {
