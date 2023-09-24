@@ -4,6 +4,42 @@ import { productModel } from '../dao/models/product.model.js';
 import mongoose from "mongoose"
 export const router = Router();
 
+const validateIds = async (cid, pid) => {
+    if (!mongoose.Types.ObjectId.isValid(pid))
+        return {
+            error: true,
+            msg: "Error - Invalid product id format"
+        };
+
+    if (!mongoose.Types.ObjectId.isValid(cid))
+        return {
+            error: true,
+            msg: "Error - Invalid cart id format"
+        };
+
+    const product = await productModel.findById(pid);
+    if (!product)
+        return {
+            error: true,
+            msg: "Error - Product id not found"
+        };
+
+    const cart = await cartModel.findById(cid);
+    if (!cart)
+        return {
+            error: true,
+            msg: "Error - Cart id not found"
+        };
+
+    return {
+        error: false,
+        msg: "",
+        product,
+        cart
+    };
+};
+
+
 router.post('/', async(req, res) => {
     res.setHeader("Content-Type", "application/json");
     let {products} = req.body;
@@ -13,18 +49,19 @@ router.post('/', async(req, res) => {
 
     try {
         for (const product of products) {
-            if (!product.product_id || !product.quantity)
+            if (!product.product || !product.quantity)
                 return res.status(400).json({status: 'error', msg: 'Error - All products must have an id and a quantity'})
             
-            if (!mongoose.Types.ObjectId.isValid(product.product_id))
+            let product_id = product.product._id;
+            if (!mongoose.Types.ObjectId.isValid(product_id))
                 return res.status(400).json({error:"Error - Invalid product id format"});
 
-            let productExists = await productModel.findById(product.product_id);
+            let productExists = await productModel.findById(product_id);
 
             if (!productExists)
                 return res.status(400).json({error:"Error - Product id not found"});
 
-            let price = (await productModel.findById(product.product_id)).price;
+            let price = (await productModel.findById(product_id)).price;
             product.subtotal = price * product.quantity;
         }
 
@@ -47,12 +84,12 @@ router.get('/:cid', async(req, res) => {
         if (!mongoose.Types.ObjectId.isValid(cid))    
             return res.status(400).json({error:"Error - Invalid cart id format"});
 
-        const products = await cartModel.findById(cid);
+        const products = await cartModel.find({_id: cid});
 
         if (!products)
             return res.status(404).json({status: 'error', msg: `Error - Cart ${cid} not found`});
 
-        res.status(200).json({status: 'ok', products});
+        res.status(200).json({status: 'ok', cart: products});
     } catch (error) {
         res.status(500).json({error: "Unexpected error", detalle: error.message});
     }
@@ -63,26 +100,18 @@ router.post('/:cid/product/:pid', async(req, res) => {
     let {cid, pid} = req.params;
 
     try {
-        if (!mongoose.Types.ObjectId.isValid(pid))
-            return res.status(400).json({error:"Error - Invalid product id format"});
+        let validation = validateIds(cid, pid);
+        if (validation.error)
+            return res.status(400).json({error: validation.msg})
 
-        if (!mongoose.Types.ObjectId.isValid(cid))
-            return res.status(400).json({error:"Error - Invalid cart id format"});
-
-        const product = await productModel.findById(pid);
-        if (!product)
-            return res.status(400).json({error:"Error - Product id not found"});
-
-        const cart = await cartModel.findById(cid);
-        if (!cart)
-            return res.status(400).json({error:"Error - Cart id not found"});
+        let {product, cart} = validation;
 
         // ¿Reducir directamente el stock del product en la coleccion Products?
         let resultado;
-        let existingProduct = cart.products.find(product => product.product_id.toString() === pid);
+        let existingProduct = cart.products.find(product => product.product.toString() === pid);
         if (existingProduct) {
             resultado = await cartModel.updateOne(
-                {_id: cid, "products.product_id": pid}, 
+                {_id: cid, "products.product": pid}, 
                 {$set: {
                     "products.$.quantity": existingProduct.quantity + 1,
                     "products.$.subtotal": existingProduct.subtotal + product.price
@@ -90,7 +119,7 @@ router.post('/:cid/product/:pid', async(req, res) => {
             );
         } else {
             let newProduct = {
-                product_id: pid,
+                product: pid,
                 quantity: 1,
                 subtotal: product.price
             }
@@ -100,12 +129,39 @@ router.post('/:cid/product/:pid', async(req, res) => {
             );
         }
 
-        
-
         res.status(200).json({status: 'ok', msg: `Product added to cart successfully: ${resultado}`});
     } catch (error) {
         res.status(500).json({error: "Unexpected error", detalle: error.message});
     }
+});
+
+router.delete('/:cid/products/:pid', async (req, res) => {
+    res.setHeader("Content-Type", "application/json");
+    let {cid, pid} = req.params;
+
+    try {
+        let validation = validateIds(cid, pid);
+        if (validation.error)
+            return res.status(400).json({error: validation.msg})
+
+        let resultado = await cartModel.updateOne({_id: cid}, {$pull: {products: {product: pid}}});
+        res.status(200).json({status: 'ok', msg: `Product with id ${pid} deleted successfully from cart ${cid}: ${resultado}`});
+
+    } catch (error) {
+        res.status(500).json({error: "Unexpected error", detalle: error.message});
+    }
+});
+
+router.put('/:cid', (req, res) => {
+
+});
+
+router.put('/:cid/products/:pid', (req, res) => {
+
+});
+
+router.delete('/:cid', (req, res) => {
+
 });
 
 
