@@ -169,6 +169,23 @@ router.put('/:cid', async (req, res) => {
         if (!Array.isArray(products))
             return res.status(400).json({status: 'error', msg: 'Error - Products should be an array of products'})
 
+        for (const product of products) {
+            if (!product.product || !product.quantity)
+                return res.status(400).json({status: 'error', msg: 'Error - All products must have an id and a quantity'})
+            
+            let product_id = product.product._id;
+            if (!mongoose.Types.ObjectId.isValid(product_id))
+                return res.status(400).json({error:"Error - Invalid product id format"});
+
+            let productExists = await productModel.findById(product_id);
+
+            if (!productExists)
+                return res.status(400).json({error:"Error - Product id not found"});
+
+            let price = (await productModel.findById(product_id)).price;
+            product.subtotal = price * product.quantity;
+        }
+
         let resultado = await cartModel.updateOne({_id: cid}, {$set: {products}});
         res.status(200).json({status: 'success', msg: `Cart ${cid} updated successfully: ${resultado}`});
     } catch (error) {
