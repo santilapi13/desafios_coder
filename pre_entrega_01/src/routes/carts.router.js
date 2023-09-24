@@ -42,7 +42,7 @@ const validateIds = async (cid, pid) => {
 
 router.post('/', async(req, res) => {
     res.setHeader("Content-Type", "application/json");
-    let {products} = req.body;
+    let { products } = req.body;
 
     if (!products)
         return res.status(400).json({status: 'error', msg: 'Error - Missing parameters'})
@@ -70,41 +70,41 @@ router.post('/', async(req, res) => {
         }
 
         let resultado = await cartModel.create(cart);
-        res.status(200).json({status: 'ok', msg: `Cart created successfully: ${resultado}`});
+        res.status(201).json({status: 'success', msg: `Cart created successfully: ${resultado}`});
     } catch (error) {
-        res.status(500).json({error: "Unexpected error", detalle: error.message});
+        res.status(500).json({error: "Unexpected error", detail: error.message});
     }
 });
 
 router.get('/:cid', async(req, res) => {
     res.setHeader("Content-Type", "application/json");
-    let {cid} = req.params;
+    let { cid } = req.params;
 
     try {
         if (!mongoose.Types.ObjectId.isValid(cid))    
             return res.status(400).json({error:"Error - Invalid cart id format"});
 
-        const products = await cartModel.find({_id: cid});
-
-        if (!products)
+        const cart = await cartModel.findOne({_id: cid});
+        
+        if (!cart)
             return res.status(404).json({status: 'error', msg: `Error - Cart ${cid} not found`});
 
-        res.status(200).json({status: 'ok', cart: products});
+        res.status(200).json({status: 'success', cart});
     } catch (error) {
-        res.status(500).json({error: "Unexpected error", detalle: error.message});
+        res.status(500).json({error: "Unexpected error", detail: error.message});
     }
 });
 
 router.post('/:cid/product/:pid', async(req, res) => {
     res.setHeader("Content-Type", "application/json");
-    let {cid, pid} = req.params;
+    let { cid, pid } = req.params;
 
     try {
         let validation = validateIds(cid, pid);
         if (validation.error)
             return res.status(400).json({error: validation.msg})
 
-        let {product, cart} = validation;
+        let { product, cart } = validation;
 
         // ¿Reducir directamente el stock del product en la coleccion Products?
         let resultado;
@@ -129,15 +129,15 @@ router.post('/:cid/product/:pid', async(req, res) => {
             );
         }
 
-        res.status(200).json({status: 'ok', msg: `Product added to cart successfully: ${resultado}`});
+        res.status(201).json({status: 'success', msg: `Product added to cart successfully: ${resultado}`});
     } catch (error) {
-        res.status(500).json({error: "Unexpected error", detalle: error.message});
+        res.status(500).json({error: "Unexpected error", detail: error.message});
     }
 });
 
 router.delete('/:cid/products/:pid', async (req, res) => {
     res.setHeader("Content-Type", "application/json");
-    let {cid, pid} = req.params;
+    let { cid, pid } = req.params;
 
     try {
         let validation = validateIds(cid, pid);
@@ -145,23 +145,79 @@ router.delete('/:cid/products/:pid', async (req, res) => {
             return res.status(400).json({error: validation.msg})
 
         let resultado = await cartModel.updateOne({_id: cid}, {$pull: {products: {product: pid}}});
-        res.status(200).json({status: 'ok', msg: `Product with id ${pid} deleted successfully from cart ${cid}: ${resultado}`});
+        res.status(200).json({status: 'success', msg: `Product with id ${pid} deleted successfully from cart ${cid}: ${resultado}`});
 
     } catch (error) {
-        res.status(500).json({error: "Unexpected error", detalle: error.message});
+        res.status(500).json({error: "Unexpected error", detail: error.message});
     }
 });
 
-router.put('/:cid', (req, res) => {
+// Actualiza la lista completamente. ¿O sólo debería agregarlos?
+router.put('/:cid', async (req, res) => {
+    res.setHeader("Content-Type", "application/json");
+    let { cid } = req.params;
 
+    try {
+        if (!mongoose.Types.ObjectId.isValid(cid))
+            return res.status(400).json({error:"Error - Invalid cart id format"});
+
+        const cart = await cartModel.findById(cid);
+        if (!cart)
+            return res.status(404).json({status: 'error', msg: `Error - Cart ${cid} not found`});
+
+        let {products} = req.body;
+        if (!Array.isArray(products))
+            return res.status(400).json({status: 'error', msg: 'Error - Products should be an array of products'})
+
+        let resultado = await cartModel.updateOne({_id: cid}, {$set: {products}});
+        res.status(200).json({status: 'success', msg: `Cart ${cid} updated successfully: ${resultado}`});
+    } catch (error) {
+        res.status(500).json({error: "Unexpected error", detail: error.message});
+    }
 });
 
-router.put('/:cid/products/:pid', (req, res) => {
+router.put('/:cid/products/:pid', async (req, res) => {
+    res.setHeader("Content-Type", "application/json");
+    let { cid, pid } = req.params;
 
+    try {
+        let validation = validateIds(cid, pid);
+        if (validation.error)
+            return res.status(400).json({error: validation.msg})
+
+        let { quantity } = req.body;
+        if (!quantity)
+            return res.status(400).json({status: 'error', msg: 'Error - New quantity must be provided.'})
+        quantity = parseInt(quantity);
+        if (isNaN(quantity) || quantity <= 0)
+            return res.status(400).json({status: 'error', msg: 'Error - New quantity must be a positive integer.'})
+
+
+        let resultado = await cartModel.updateOne({_id: cid, "products.product": pid}, {$set: {"products.$.quantity": quantity}});
+        res.status(200).json({status: 'success', msg: `Product with id ${pid} quantity updated successfully to ${quantity}: ${resultado}`});
+    } catch (error) {
+        res.status(500).json({error: "Unexpected error", detail: error.message});
+    }
 });
 
-router.delete('/:cid', (req, res) => {
+router.delete('/:cid', async (req, res) => {
+    res.setHeader("Content-Type", "application/json");
+    let { cid } = req.params;
 
+    try {
+        if (!mongoose.Types.ObjectId.isValid(cid))
+            return res.status(400).json({error:"Error - Invalid cart id format"});
+
+        const cart = await cartModel.findById(cid);
+        if (!cart)
+            return res.status(404).json({status: 'error', msg: `Error - Cart ${cid} not found`});
+
+        let resultado = await cartModel.updateOne({_id: cid}, {$set: {products: []}});
+        res.status(200).json({status: 'success', msg: `Cart ${cid} deleted successfully: ${resultado}`});
+
+    } catch (error) {
+        res.status(500).json({error: "Unexpected error", detail: error.message});
+    }
 });
 
 
