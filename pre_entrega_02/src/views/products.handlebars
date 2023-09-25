@@ -1,0 +1,38 @@
+<h1>Productos (pág {{page}}/{{totalPages}}):</h1>
+<ol id="products">
+    {{#each products}}
+        <li>
+            <ul>
+                <li>
+                    <a href="/products/{{this.id}}">{{this.title}}</a>
+                    <button class="btn-add-to-cart" data-product-id="{{this.id}}">Añadir al carrito</button>
+                </li>
+            </ul>
+            <br>
+        </li>
+    {{/each}}
+</ol>
+<br>
+
+<h3 id="cart-id">6510a5067c41cba7c8e3a6a7</h3>
+<a href="/carts/6510a5067c41cba7c8e3a6a7">Click aqui para ver carrito</a>
+<br>
+<br>
+
+<a href="/products?page=1">Pág.1</a>
+
+{{#if hasPrevPage}}
+    <a href="{{prevPage}}">Prev.Pág.</a>
+{{else}}
+    <span>Prev.Pág.</span>
+{{/if}}
+
+{{#if hasNextPage}}
+    <a href="{{nextPage}}">Next.Pág.</a>
+{{else}}
+    <span>Next.Pág.</span>
+{{/if}}
+
+<a href="{{lastPageLink}}">Ult.Pág</a>
+
+<script src="/assets/scripts/products.js"></script>
