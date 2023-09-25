@@ -95,12 +95,12 @@ router.get('/:cid', async(req, res) => {
     }
 });
 
-router.post('/:cid/product/:pid', async(req, res) => {
+router.post('/:cid/product/:pid', async (req, res) => {
     res.setHeader("Content-Type", "application/json");
     let { cid, pid } = req.params;
 
     try {
-        let validation = validateIds(cid, pid);
+        let validation = await validateIds(cid, pid);
         if (validation.error)
             return res.status(400).json({error: validation.msg})
 
@@ -108,8 +108,11 @@ router.post('/:cid/product/:pid', async(req, res) => {
 
         // ¿Reducir directamente el stock del product en la coleccion Products?
         let resultado;
-        let existingProduct = cart.products.find(product => product.product.toString() === pid);
+        let existingProduct = await cartModel.findOne({_id: cid, "products.product": pid}, {"products.$": 1});
+        console.log(existingProduct)
+
         if (existingProduct) {
+            existingProduct = existingProduct.products[0]
             resultado = await cartModel.updateOne(
                 {_id: cid, "products.product": pid}, 
                 {$set: {
@@ -140,7 +143,7 @@ router.delete('/:cid/products/:pid', async (req, res) => {
     let { cid, pid } = req.params;
 
     try {
-        let validation = validateIds(cid, pid);
+        let validation = await validateIds(cid, pid);
         if (validation.error)
             return res.status(400).json({error: validation.msg})
 

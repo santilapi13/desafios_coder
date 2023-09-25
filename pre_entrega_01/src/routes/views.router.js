@@ -26,7 +26,90 @@ router.get('/realtimeproducts', async(req,res) => {
 });
 
 router.get('/products', async (req,res) => {
+    res.setHeader("Content-Type","text/html");
+    let {limit, page, sort, query} = req.query;
 
+    limit = limit ? parseInt(limit) : 10;
+    if (isNaN(limit) || limit < 0)
+        return res.status(400).json({status: 'error', msg: 'Parameter <limit> must be a non-negative integer'});
+
+    page = page ? parseInt(page) : 1;
+    if (isNaN(page) || page <= 0)
+        return res.status(400).json({status: 'error', msg: 'Parameter <page> must be a positive integer'});
+
+    if (sort && !['asc', 'desc'].includes(sort))
+        return res.status(400).json({status: 'error', msg: 'Parameter <sort> must be one of the following: asc, desc'});
+    let sortBy = sort ? {price: sort} : {};
+
+    // query puede ser available o puede ser la categoria por la cual filtrar.
+    let queryCondition = {};
+    if (query)
+        queryCondition = query === 'available' ? {status: true} : {category: query};
+
+    let resultado;
+    try {
+        resultado = await productModel.paginate(queryCondition, {limit, lean: true, page, sortBy});
+    } catch (error) {
+        return res.status(500).json({status: "error", msg: error.message});
+    }
+
+    let {
+        totalPages,
+        hasPrevPage,
+        hasNextPage,
+        prevPage,
+        nextPage
+    } = resultado;
+
+    const baseUrl = "/products"; 
+    const prevLink = hasPrevPage ? `${baseUrl}?page=${prevPage}&limit=${limit}${sort ?"&sort=" + sort : ""}${query ? "&query=" + query: ""}` : null;
+    const nextLink = hasNextPage ? `${baseUrl}?page=${nextPage}&limit=${limit}${sort ?"&sort=" + sort : ""}${query ? "&query=" + query: ""}` : null;
+    let lastPageLink = `${baseUrl}?page=${totalPages}&limit=${limit}${sort ?"&sort=" + sort : ""}${query ? "&query=" + query: ""}`; 
+
+    res.status(200).render("products", {
+        title: "Productos",
+        products: resultado.docs,
+        totalPages,
+        hasPrevPage,
+        hasNextPage,
+        prevPage: prevLink,
+        nextPage: nextLink,
+        lastPageLink,
+        page
+    }); 
+
+});
+
+router.get('/products/:pid', async (req,res) => {
+    res.setHeader("Content-Type","text/html");
+    let { pid } = req.params;
+
+    try {
+        if (!mongoose.Types.ObjectId.isValid(pid))
+            return res.status(400).render("notfound", {
+                msg: "Error - Invalid product id format"
+            });
+
+        const product = await productModel.findOne({_id: pid});
+        if (!product)
+            return res.status(404).render("notfound", {
+                msg: `Error - Product ${pid} not found`
+            });
+
+        let {title, price, description, code, category, stock} = product.toObject();
+
+        res.status(200).render("product", {
+            title,
+            price,
+            description,
+            code,
+            category,
+            stock,
+            id: pid
+        });
+    } catch (error) {
+        res.status(500).render("notfound", {msg: error.message});
+    }
 });
 
 router.get('/carts/:cid', async (req,res) => {

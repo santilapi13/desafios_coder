@@ -1,0 +1,28 @@
+<h1>Productos (pág {{page}}/{{totalPages}}):</h1>
+<ol id="products">
+    {{#each products}}
+        <li>
+            <ul>
+                <li><a href="/products/{{this.id}}">{{this.title}}</a></li>
+            </ul>
+            <br>
+        </li>
+    {{/each}}
+</ol>
+<br>
+
+<a href="/products?page=1">Pág.1</a>
+
+{{#if hasPrevPage}}
+    <a href="{{prevPage}}">Prev.Pág.</a>
+{{else}}
+    <span>Prev.Pág.</span>
+{{/if}}
+
+{{#if hasNextPage}}
+    <a href="{{nextPage}}">Next.Pág.</a>
+{{else}}
+    <span>Next.Pág.</span>
+{{/if}}
+
+<a href="{{lastPageLink}}">Ult.Pág</a>
