@@ -65,7 +65,12 @@ router.get('/products', async (req,res) => {
 
     let resultado;
     try {
-        resultado = await productModel.paginate(queryCondition, {limit, lean: true, page, sortBy});
+        resultado = await productModel.paginate(queryCondition, {limit, lean: true, page, sort: sortBy});
+        const maxPages = resultado.totalPages;
+        if (page > maxPages) {
+            page = maxPages;
+            resultado = await productModel.paginate(queryCondition, {limit, lean: true, page, sort: sortBy});
+        }
     } catch (error) {
         return res.status(500).json({status: "error", msg: error.message});
     }
@@ -158,7 +163,6 @@ router.get('/carts/:cid', async (req,res) => {
             products.push(newProduct);
         });
 
-        console.log(products)
 
         res.status(200).render("carts", {
             title: "Carrito de compras",

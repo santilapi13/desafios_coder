@@ -109,7 +109,6 @@ router.post('/:cid/product/:pid', async (req, res) => {
         // ¿Reducir directamente el stock del product en la coleccion Products?
         let resultado;
         let existingProduct = await cartModel.findOne({_id: cid, "products.product": pid}, {"products.$": 1});
-        console.log(existingProduct)
 
         if (existingProduct) {
             existingProduct = existingProduct.products[0]
