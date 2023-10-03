@@ -9,12 +9,16 @@ router.post("/register", async (req, res)  => {
     let { first_name, last_name, email, age, password } = req.body;
 
     if (!first_name || !last_name || !email || !age || !password) {
-        return res.status(400).send("Missing data.");
+        return res.status(400).render("register", {
+            missingData: true
+        });
     }
 
     let exists = await usersModel.findOne({email});
     if (exists) {
-        return res.status(400).send(`User with email ${email} already exists. Please use another email.`);
+        return res.status(400).render("register", {
+            repeatedEmail: true
+        });
     }
 
     password = crypto.createHmac('sha256', secretKey).update(password).digest('base64');
@@ -36,14 +40,18 @@ router.post("/login", async (req, res) => {
         let { email, password } = req.body;
     
         if (!email || !password) {
-            return res.status(400).send("Missing data.");
+            return res.status(400).render("login", {
+                missingData: true
+            });
         }
     
         password = crypto.createHmac('sha256', secretKey).update(password).digest('base64');
     
         let user = await usersModel.findOne({email, password});
         if (!user) {
-            return res.status(400).send("Invalid credentials.");
+            return res.status(400).render("login", {
+                invalidCredentials: true
+            });
         }
     
         delete user.password;
@@ -53,7 +61,12 @@ router.post("/login", async (req, res) => {
 });
 
 router.get("/logout", (req, res) => {
-    req.session.destroy(e => console.log(e));
-
-    res.redirect("/login?message=Logged out successfully.");
+    req.session.destroy((err) => {
+        if (err)
+            return console.error("Error al destruir sesion: ", err);
+        else
+            console.log("Sesion destruida");
+            res.redirect("/login?message=Logged out successfully.");
+    });
+    
 });

@@ -1,8 +1,13 @@
 import {Router} from 'express';
 import { productModel } from "../dao/models/product.model.js";
+//import ProductManagerFS from '../dao/productManagerFS.js';
+import ProductManagerDB from '../dao/productManagerDB.js';
 import mongoose from "mongoose"
 export const router = Router();
 import {io} from "../app.js";
+
+// Acá se selecciona el método de persistencia (File System o MongoDB)
+const productManager = new ProductManagerDB();
 
 let validateProps = (body, ...validator) => {
     let newProductProps = Object.keys(body);
@@ -37,12 +42,7 @@ router.get('/', async(req, res) => {
 
     let resultado;
     try {
-        resultado = await productModel.paginate(queryCondition, {limit, lean: true, page, sort: sortBy});
-        const maxPages = resultado.totalPages;
-        if (page > maxPages) {
-            page = maxPages;
-            resultado = await productModel.paginate(queryCondition, {limit, lean: true, page, sort: sortBy});
-        }
+        resultado = productManager.getProducts(queryCondition, limit, page, sortBy);
     } catch (error) {
         return res.status(500).json({status: "error", msg: error.message});
     }

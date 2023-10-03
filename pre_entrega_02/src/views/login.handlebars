@@ -4,6 +4,12 @@
     <input type="email" name="email" placeholder="email">
     <input type="password" name="password" placeholder="password">
 
+    {{#if invalidCredentials}}
+        <p><font color="red">Credenciales invalidas. Intente de nuevo.</font></p>
+    {{/if}}
+    {{#if missingData}}
+        <p><font color="red">Por favor, complete email y contraseña.</font></p>
+    {{/if}}
     <input type="submit" value="Login">
 </form>
 <br>

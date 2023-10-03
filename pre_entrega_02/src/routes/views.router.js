@@ -1,19 +1,23 @@
 import {Router} from 'express';
 import { productModel } from '../dao/models/product.model.js';
 import { cartModel } from '../dao/models/cart.model.js';
+//import ProductManagerFS from '../dao/productManagerFS.js';
+import ProductManagerDB from '../dao/productManagerDB.js';
 import mongoose from "mongoose"
 export const router = Router();
 
-const auth=(req, res, next)=>{
-    if(!req.session.user)
+// Acá se selecciona el método de persistencia (File System o MongoDB)
+const productManager = new ProductManagerDB();
+
+const auth = (req, res, next) => {
+    if (!req.session.user)
         return res.redirect('/login');
 
-    next() ;    
+    next();    
 }
 
-const auth2=(req, res, next)=>{
+const auth2 = (req, res, next)=>{
     if(req.session.user) {
-        console.log('auth2 me manda a perfil');
         return res.redirect('/profile');
     }
 
@@ -65,12 +69,7 @@ router.get('/products', async (req,res) => {
 
     let resultado;
     try {
-        resultado = await productModel.paginate(queryCondition, {limit, lean: true, page, sort: sortBy});
-        const maxPages = resultado.totalPages;
-        if (page > maxPages) {
-            page = maxPages;
-            resultado = await productModel.paginate(queryCondition, {limit, lean: true, page, sort: sortBy});
-        }
+        resultado = await productManager.getProducts(queryCondition, limit, page, sortBy);
     } catch (error) {
         return res.status(500).json({status: "error", msg: error.message});
     }
@@ -88,11 +87,12 @@ router.get('/products', async (req,res) => {
     const nextLink = hasNextPage ? `${baseUrl}?page=${nextPage}&limit=${limit}${sort ?"&sort=" + sort : ""}${query ? "&query=" + query: ""}` : null;
     let lastPageLink = `${baseUrl}?page=${totalPages}&limit=${limit}${sort ?"&sort=" + sort : ""}${query ? "&query=" + query: ""}`; 
 
-    let {first_name, last_name} = req.session.user;
+    let {first_name, last_name, role} = req.session.user;
     res.status(200).render("products", {
         title: `Productos`,
         first_name,
         last_name,
+        role,
         products: resultado.docs,
         totalPages,
         hasPrevPage,
@@ -183,7 +183,7 @@ router.get('/register',auth2,(req,res)=>{
     res.status(200).render('register');
 });
 
-router.get('/login',auth2,(req,res)=>{
+router.get('/login', auth2, (req,res)=>{
     res.status(200).render('login');
 });
 
