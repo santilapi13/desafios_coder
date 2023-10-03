@@ -1,5 +1,5 @@
 <h1>{{title}}</h1>
-<ul>
+<ul> 
     <li id="product-id">{{id}}</li>
     <li>Precio: {{price}}</li>
     <li>Código: {{code}}</li>
@@ -9,8 +9,16 @@
 </ul>
 
 <button id="btn-add-to-cart">Añadir al carrito</button>
-<p>Al apretar este botón, se agregará el producto al carrito de prueba con id:</p>
-<h3 id="cart-id">6510a5067c41cba7c8e3a6a7</h3>
-<a href="/carts/6510a5067c41cba7c8e3a6a7">Click aqui para ver carrito</a>
+
+<br>
+<br>
+<ul class="menu">
+    <a id="cart-id" href="/carts/6510a5067c41cba7c8e3a6a7">Ver carrito</a>
+    <a href="/products">Ver productos</a>
+</ul>
+
+<hr>
+<br>
+{{>menu}}
 
 <script src="/assets/scripts/addToCart.js"></script>

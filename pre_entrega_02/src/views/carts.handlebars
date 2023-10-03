@@ -1,4 +1,6 @@
 <h1>Lista de productos del carrito {{cid}}:</h1>
+
+<ul class="menu"><a href="/products">Ver productos</a></ul>
 <ol>
     {{#each products}}
         <li>
@@ -16,3 +18,7 @@
         </li>
     {{/each}}
 </ol>
+
+<hr>
+<br>
+{{>menu}}

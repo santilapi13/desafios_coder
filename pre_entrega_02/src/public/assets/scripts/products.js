@@ -1,5 +1,5 @@
 const addToCartButtons = document.querySelectorAll(".btn-add-to-cart");
-const cart_id = document.getElementById("cart-id").textContent;
+const cart_id = document.getElementById("cart-id").href.split("/").pop();
 
 const protocol = window.location.protocol;
 const host = window.location.host;
@@ -21,9 +21,6 @@ addToCartButtons.forEach(button => {
                 throw new Error(`Query failed. Status: ${response.status}`);
             }
             return response.json(); 
-        })
-        .then(data => {
-            console.log("Respuesta:", data);
         })
         .catch(error => {
             console.error("Error:", error.message);

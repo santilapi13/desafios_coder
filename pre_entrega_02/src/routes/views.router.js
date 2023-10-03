@@ -4,6 +4,23 @@ import { cartModel } from '../dao/models/cart.model.js';
 import mongoose from "mongoose"
 export const router = Router();
 
+const auth=(req, res, next)=>{
+    if(!req.session.user)
+        return res.redirect('/login');
+
+    next() ;    
+}
+
+const auth2=(req, res, next)=>{
+    if(req.session.user) {
+        console.log('auth2 me manda a perfil');
+        return res.redirect('/profile');
+    }
+
+    next();
+}
+
+
 router.get('/home', async(req,res) => {
     res.setHeader("Content-Type","text/html");
     const products = await productModel.find();
@@ -66,8 +83,11 @@ router.get('/products', async (req,res) => {
     const nextLink = hasNextPage ? `${baseUrl}?page=${nextPage}&limit=${limit}${sort ?"&sort=" + sort : ""}${query ? "&query=" + query: ""}` : null;
     let lastPageLink = `${baseUrl}?page=${totalPages}&limit=${limit}${sort ?"&sort=" + sort : ""}${query ? "&query=" + query: ""}`; 
 
+    let {first_name, last_name} = req.session.user;
     res.status(200).render("products", {
-        title: "Productos",
+        title: `Productos`,
+        first_name,
+        last_name,
         products: resultado.docs,
         totalPages,
         hasPrevPage,
@@ -150,6 +170,30 @@ router.get('/carts/:cid', async (req,res) => {
     }
 
 });
+
+router.get('/',(req,res)=>{
+    res.status(200).render('home');
+});
+
+router.get('/register',auth2,(req,res)=>{
+    res.status(200).render('register');
+});
+
+router.get('/login',auth2,(req,res)=>{
+    res.status(200).render('login');
+});
+
+router.get('/profile',auth,(req,res)=>{
+    let {first_name, last_name, email, age} = req.session.user;
+    res.status(200).render('profile', {
+        first_name,
+        last_name,
+        email,
+        age
+    });
+});
+
+
 
 
 // Ignorar lo que sigue: implementacion vieja con File System
