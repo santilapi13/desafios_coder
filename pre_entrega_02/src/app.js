@@ -3,6 +3,10 @@ import {router as productsRouter} from './routes/products.router.js';
 import {router as cartsRouter} from './routes/carts.router.js';
 import {router as viewsRouter} from './routes/views.router.js';
 import {router as sessionsRouter} from './routes/sessions.router.js';
+
+import { initializePassport } from './config/passport.config.js'
+import passport from 'passport';
+
 import handlebars from 'express-handlebars';
 import __dirname from './util.js';
 import {Server} from 'socket.io'
@@ -26,6 +30,10 @@ app.use(session({
 	resave: true,
 	saveUninitialized: true
 }));
+
+initializePassport();
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));

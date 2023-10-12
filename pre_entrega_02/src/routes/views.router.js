@@ -1,4 +1,4 @@
-import {Router} from 'express';
+import { Router } from 'express';
 import { productModel } from '../dao/models/product.model.js';
 import { cartModel } from '../dao/models/cart.model.js';
 //import ProductManagerFS from '../dao/productManagerFS.js';
@@ -16,7 +16,7 @@ const auth = (req, res, next) => {
     next();    
 }
 
-const auth2 = (req, res, next)=>{
+const auth2 = (req, res, next) => {
     if(req.session.user) {
         return res.redirect('/profile');
     }
@@ -25,7 +25,8 @@ const auth2 = (req, res, next)=>{
 }
 
 
-router.get('/home', async(req,res) => {
+/*
+router.get('/home', async (req,res) => {
     res.setHeader("Content-Type","text/html");
     const products = await productModel.find();
     const productsPlain = products.map(product => product.toObject());
@@ -35,7 +36,7 @@ router.get('/home', async(req,res) => {
 	});
 });
 
-router.get('/realtimeproducts', async(req,res) => {
+router.get('/realtimeproducts', async (req,res) => {
     res.setHeader("Content-Type","text/html");
     const products = await productModel.find();
     const productsPlain = products.map(product => product.toObject());
@@ -45,8 +46,9 @@ router.get('/realtimeproducts', async(req,res) => {
         products: productsPlain
     });
 });
+*/
 
-router.get('/products', async (req,res) => {
+router.get('/products', auth, async (req,res) => {
     res.setHeader("Content-Type","text/html");
     let {limit, page, sort, query} = req.query;
 
@@ -100,12 +102,13 @@ router.get('/products', async (req,res) => {
         prevPage: prevLink,
         nextPage: nextLink,
         lastPageLink,
-        page
+        page,
+        logged: true
     }); 
 
 });
 
-router.get('/products/:pid', async (req,res) => {
+router.get('/products/:pid', auth, async (req,res) => {
     res.setHeader("Content-Type","text/html");
     let { pid } = req.params;
 
@@ -130,14 +133,15 @@ router.get('/products/:pid', async (req,res) => {
             code,
             category,
             stock,
-            id: pid
+            id: pid,
+            logged: true
         });
     } catch (error) {
         res.status(500).render("notfound", {msg: error.message});
     }
 });
 
-router.get('/carts/:cid', async (req,res) => {
+router.get('/carts/:cid', auth,  async (req,res) => {
     res.setHeader("Content-Type","text/html");
     let { cid } = req.params;
 
@@ -167,7 +171,8 @@ router.get('/carts/:cid', async (req,res) => {
         res.status(200).render("carts", {
             title: "Carrito de compras",
             products: products,
-            cid
+            cid,
+            logged: true
         });
     } catch (error) {
         res.status(500).render("notfound", {msg: error.message});
@@ -175,25 +180,33 @@ router.get('/carts/:cid', async (req,res) => {
 
 });
 
-router.get('/',(req,res)=>{
-    res.status(200).render('home');
+router.get('/', (req,res) => {
+    const logged = req.session.user ? true : false;
+    res.status(200).render('home', {
+        logged
+    });
 });
 
-router.get('/register',auth2,(req,res)=>{
-    res.status(200).render('register');
+router.get('/register', auth2, (req,res) => {
+    res.status(200).render('register', {
+        logged: false
+    });
 });
 
-router.get('/login', auth2, (req,res)=>{
-    res.status(200).render('login');
+router.get('/login', auth2, (req,res) => {
+    res.status(200).render('login', {
+        logged: false
+    });
 });
 
-router.get('/profile',auth,(req,res)=>{
+router.get('/profile', auth, (req,res) => {
     let {first_name, last_name, email, age} = req.session.user;
     res.status(200).render('profile', {
         first_name,
         last_name,
         email,
-        age
+        age,
+        logged: true
     });
 });
 
