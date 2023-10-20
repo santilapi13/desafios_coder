@@ -1,7 +1,7 @@
 import {Router} from 'express';
-import { usersModel } from '../dao/models/users.model.js';
 import passport from 'passport';
 export const router = Router();
+import { passportCall } from '../util.js';
 
 router.post("/register", passport.authenticate('register', {failureRedirect: '/api/sessions/registerfailed'}), async (req, res)  => {
     let { email } = req.body;
