@@ -1,29 +1,42 @@
 import passport from 'passport';
 import local from 'passport-local'
 import github from 'passport-github2'
+import jwt from "passport-jwt";
 import { usersModel } from '../dao/models/users.model.js'
 import { createHash, isValidPassword } from '../util.js'
+import { PRIVATE_KEY } from '../util.js'
 
 const LocalStrategy = local.Strategy;
 const GitHubStrategy = github.Strategy;
+const JWTStrategy = jwt.Strategy;
+const ExtractJWT = jwt.ExtractJwt;
+
+const cookieExtractor = req => {
+	let token = null;
+	if (req && req.cookies && req.cookies.coderCookie)
+		token = req.cookies.coderCookie;
+
+	return token;
+}
 
 export const initializePassport = () => {
 	passport.use('register', new LocalStrategy({
 			passReqToCallback: true,
 			usernameField: 'email'
 		}, async (req, username, password, done) => {
+			console.log("Estrategia passport utilizada: Estrategia Local Register");
 			const { first_name, last_name, email, age } = req.body;
 
             if (!first_name || !last_name || !email || !age || !password) {
-                const error = {missingData: true}
-                return done(null, false);
+                const info = {message: "Missing data"}
+                return done(null, false, info);
             }
 
 			try {
 				let user = await usersModel.findOne({email: username});
 				if (user) {
-					const error = {repeatedEmail: true}
-					return done(null, false);
+					const info = {message: "Email already registered"}
+					return done(null, false, info);
 				}
 				const newUser = {
 					first_name,
@@ -49,22 +62,22 @@ export const initializePassport = () => {
 	});
 
 	passport.use('login', new LocalStrategy({usernameField: 'email'}, async (email, password, done) => {
-
+		console.log("Estrategia passport utilizada: Estrategia Local Login");
         if (!email || !password) {
-            const error = {missingData: true}
-            return done(null, false);
+            const info = {message: "Missing credentials"}
+            return done(null, false, info);
         }
 
 		try {
 			const user = await usersModel.findOne({email});
 			if (!user) {
-				const error = {invalidCredentials: true}
-                return done(null, false);
+				const info = {message: "Invalid credentials"}
+                return done(null, false, info);
 			}
 
 			if (!isValidPassword(user, password)) {
-                const error = {invalidCredentials: true}
-                return done(null, false);
+                const info = {message: "Invalid credentials"}
+                return done(null, false, info);
             }
 
 			return done(null, user);
@@ -79,11 +92,10 @@ export const initializePassport = () => {
 		callbackURL: "http://localhost:8080/api/sessions/githubcallback"
 	}, async (accessToken, refreshToken, profile, done) => {
 		try {
-			console.log(profile);
+			console.log("Estrategia passport utilizada: Estrategia GitHub");
 			let user = await usersModel.findOne({email:profile._json.email});
-			// Si no existe, lo crea en la BD
 			if (!user) {
-				let newUser = {  // Se rellenan los campos que no vienen desde el perfil.
+				let newUser = {  
 					first_name: profile._json.name,
 					last_name: '',
 					age: 18,
@@ -99,6 +111,18 @@ export const initializePassport = () => {
 			done(null, user);
 		}
 	}))
+
+	passport.use('jwt', new JWTStrategy({
+		jwtFromRequest: ExtractJWT.fromExtractors([cookieExtractor]),
+		secretOrKey: PRIVATE_KEY 
+	}, async (jwt_payload, done) => {
+		console.log("Estrategia passport utilizada: Estrategia JWT");
+		try {
+			return done(null, jwt_payload);
+		} catch (error) {
+			return done(error);
+		}	
+	}));
 }
 
 

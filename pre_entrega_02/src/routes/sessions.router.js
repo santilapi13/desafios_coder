@@ -1,96 +1,52 @@
-import {Router} from 'express';
+import Router from './router.js'
 import passport from 'passport';
-export const router = Router();
-import { passportCall } from '../util.js';
+import { passportCall, generateJWT } from '../util.js';
 
-router.post("/register", passport.authenticate('register', {failureRedirect: '/api/sessions/registerfailed'}), async (req, res)  => {
-    let { email } = req.body;
+export class SessionsRouter extends Router {
+    init() {
+        this.post('/register', ['PUBLIC'], passportCall('register', '/register'), (req, res) => {
+            let { email } = req.body;
 
-    /*
-    let { first_name, last_name, email, age, password } = req.body;
-
-    if (!first_name || !last_name || !email || !age || !password) {
-        return res.status(400).render("register", {
-            missingData: true
+            res.redirect(`/login?userCreated=${email}`);
         });
-    }
 
-    let exists = await usersModel.findOne({email});
-    if (exists) {
-        return res.status(400).render("register", {
-            repeatedEmail: true
+        this.post('/login', ['PUBLIC'], passportCall('login', '/login'), (req, res) => {
+            const user = req.user;
+            delete user.password;
+            
+            let token = generateJWT(user);
+
+            res.cookie('coderCookie', token, {
+                maxAge:1000*60*60,
+                httpOnly:true
+            });
+
+            res.status(200).redirect("/products");
         });
-    }
 
-    await usersModel.create({
-        first_name,
-        last_name,
-        email,
-        age,
-        password: createHash(password)
-    });
-    */
+        this.get('/github', ['PUBLIC'], passport.authenticate('github', {scope: ['user:email']}), (req, res) => {});
 
-    res.redirect(`/login?userCreated=${email}`);
-});
-
-router.get('/registerfailed', async (req, res) => {
-    console.log("Register strategy failed");
-    // TODO: Manejar errores de registro para que se contemple bien en la vista.
-    res.status(400).render("register", {
-        repeatedEmail: true
-    });
-});
-
-router.post("/login", passport.authenticate('login', {failureRedirect: '/api/sessions/loginfailed'}), async (req, res) => {
-    /*
-    let { email, password } = req.body;
-
-    if (!email || !password) {
-        return res.status(400).render("login", {
-            missingData: true
+        this.get('/github/callback', ['PUBLIC'], passportCall('github', '/login'), (req, res) => {
+            req.session.user = req.user;
+            res.redirect('/products');
         });
-    }
 
-    const user = await usersModel.findOne({email: email}, {email: 1, first_name: 1, last_name: 1, password: 1});
-    if (!user) return res.status(400).render("login", {
-        invalidCredentials: true
-    });
-
-    if (!isValidPassword(user, password)) return res.status(403).render("login", {
-        invalidCredentials: true
-    });
-    */
-    const user = req.user;
-    delete user.password;
-    req.session.user = user;
-    
-    res.redirect("/products");
-    
-});
-
-router.get('/loginfailed', async (req, res) => {
-	console.log("Login strategy failed");
-    // TODO: Manejar errores de login para que se contemple bien en la vista.
-    res.status(400).render("login", {
-        invalidCredentials: true
-    });
-});
-
-router.get("/github", passport.authenticate("github", {scope: ["user: email"]}), async (req, res) => {});
-
-router.get("/githubcallback", passport.authenticate("github", {failureRedirect: "/login"}), async (req, res) => {
-	req.session.user = req.user;
-	res.redirect("/products");
-});
-
-router.get("/logout", (req, res) => {
-    req.session.destroy((err) => {
-        if (err)
-            return console.error("Error al destruir sesion: ", err);
-        else
-            console.log("Sesion destruida");
+        this.get('/logout', ['USER', 'ADMIN'], (req, res) => {
+            /*
+            req.session.destroy((err) => {
+                if (err)
+                    return console.error("Error al destruir sesion: ", err);
+                else
+                    res.redirect("/login?message=Logged out successfully.");
+            });
+            */
+            res.clearCookie('coderCookie');
             res.redirect("/login?message=Logged out successfully.");
-    });
-    
-});
+        });
+
+        // En caso de no estar logeado, redirecciona a /login
+        this.get('/current', ['USER', 'ADMIN'], (req, res) => {
+            res.sendSuccess(req.user);
+        });
+    }
+}

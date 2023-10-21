@@ -1,15 +1,18 @@
 import express from 'express';
-import {router as productsRouter} from './routes/products.router.js';
-import {router as cartsRouter} from './routes/carts.router.js';
-import {router as viewsRouter} from './routes/views.router.js';
-import {router as sessionsRouter} from './routes/sessions.router.js';
 
+import { ProductsRouter } from './routes/products.router.js';
+import { CartsRouter } from './routes/carts.router.js';
+import { SessionsRouter } from './routes/sessions.router.js';
+import { ViewsRouter } from './routes/views.router.js';
+
+import { PRIVATE_KEY } from './util.js'
 import { initializePassport } from './config/passport.config.js'
 import passport from 'passport';
+import cookieParser from 'cookie-parser';
 
 import handlebars from 'express-handlebars';
 import __dirname from './util.js';
-import {Server} from 'socket.io'
+import { Server } from 'socket.io'
 import mongoose from "mongoose"
 import session from "express-session";
 import MongoStore from "connect-mongo";
@@ -17,8 +20,12 @@ import MongoStore from "connect-mongo";
 const PORT = 8080;
 const app = express();
 
+const productsRouter = new ProductsRouter();
+const cartsRouter = new CartsRouter();
+const sessionsRouter = new SessionsRouter();
+const viewsRouter = new ViewsRouter();
+
 const dbURL = "mongodb+srv://santilapiana02:aHGwx1LOTFj9kMur@e-commerce.un2yreb.mongodb.net/?retryWrites=true&w=majority"
-export const secretKey = "hanskfn9832h";
 
 app.use(session({
     store: MongoStore.create({
@@ -26,28 +33,28 @@ app.use(session({
 		mongoOptions: {useNewUrlParser: true, useUnifiedTopology: true},
 		ttl: 3600
 	}),
-	secret: secretKey,
+	secret: PRIVATE_KEY,
 	resave: true,
 	saveUninitialized: true
 }));
 
+app.use(express.json());
+app.use(express.urlencoded({extended:true}));
+app.use(express.static(__dirname + '/public'));
+
+app.use(cookieParser());
 initializePassport();
 app.use(passport.initialize());
 app.use(passport.session());
-
-app.use(express.json());
-app.use(express.urlencoded({extended:true}));
-
-app.use(express.static(__dirname + '/public'));
 
 app.engine("handlebars", handlebars.engine());
 app.set("views", __dirname + "/views");
 app.set("view engine", "handlebars");
 
-app.use("/api/products", productsRouter);
-app.use("/api/carts", cartsRouter);
-app.use("/api/sessions", sessionsRouter);
-app.use("/", viewsRouter);
+app.use("/api/products", productsRouter.getRouter());
+app.use("/api/carts", cartsRouter.getRouter());
+app.use("/api/sessions", sessionsRouter.getRouter());
+app.use("/", viewsRouter.getRouter());
 
 app.get('*', (req, res) => {
     res.setHeader("Content-Type", "text/plain");
@@ -69,3 +76,5 @@ export const io = new Server(serverExpress);
 io.on('connection', (socket) => {
     console.log(`Client with id ${socket.id} has connected`);
 });
+
+serverExpress.on('error', (error) => console.log(error));
