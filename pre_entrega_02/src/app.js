@@ -16,8 +16,11 @@ import { Server } from 'socket.io'
 import mongoose from "mongoose"
 import session from "express-session";
 import MongoStore from "connect-mongo";
+import { config } from './config/dotenv.config.js';
 
-const PORT = 8080;
+const PORT = config.PORT;
+const MONGO_URL = config.MONGO_URL;
+
 const app = express();
 
 const productsRouter = new ProductsRouter();
@@ -25,11 +28,9 @@ const cartsRouter = new CartsRouter();
 const sessionsRouter = new SessionsRouter();
 const viewsRouter = new ViewsRouter();
 
-const dbURL = "mongodb+srv://santilapiana02:aHGwx1LOTFj9kMur@e-commerce.un2yreb.mongodb.net/?retryWrites=true&w=majority"
-
 app.use(session({
     store: MongoStore.create({
-		mongoUrl: dbURL,
+		mongoUrl: MONGO_URL,
 		mongoOptions: {useNewUrlParser: true, useUnifiedTopology: true},
 		ttl: 3600
 	}),
@@ -65,7 +66,7 @@ const serverExpress = app.listen(PORT, () => {
     console.log(`Server corriendo en puerto ${PORT}`);
 });
 
-mongoose.connect(dbURL)
+mongoose.connect(MONGO_URL)
     .catch((error) => {
         console.log("Cannot connect to database " + error);
         process.exit();

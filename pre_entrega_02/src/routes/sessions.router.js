@@ -32,19 +32,10 @@ export class SessionsRouter extends Router {
         });
 
         this.get('/logout', ['USER', 'ADMIN'], (req, res) => {
-            /*
-            req.session.destroy((err) => {
-                if (err)
-                    return console.error("Error al destruir sesion: ", err);
-                else
-                    res.redirect("/login?message=Logged out successfully.");
-            });
-            */
             res.clearCookie('coderCookie');
             res.redirect("/login?message=Logged out successfully.");
         });
 
-        // En caso de no estar logeado, redirecciona a /login
         this.get('/current', ['USER', 'ADMIN'], (req, res) => {
             res.sendSuccess(req.user);
         });

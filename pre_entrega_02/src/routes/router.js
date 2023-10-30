@@ -27,7 +27,11 @@ export default class Router {
 	}
 
     generateCustomResponses = (req, res, next) => {
-        res.sendSuccess = payload => res.send({status: "success", payload});
+        res.sendSuccess = payload => res.status(200).send({status: "success", payload});
+        res.renderSuccess = (view, payload) => {
+            res.setHeader("Content-Type","text/html");
+            res.status(200).render(view, payload);
+        };
         res.sendServerError = error => res.status(500).send({status: "error", error});
         res.sendUserError = error => res.status(400).send({status: "error", error});
         res.sendAuthenticationError = error => res.status(401).redirect("/login");

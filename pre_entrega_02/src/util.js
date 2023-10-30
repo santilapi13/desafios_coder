@@ -9,7 +9,11 @@ const __dirname = dirname(__filename);
 
 export default __dirname;
 
-export const PRIVATE_KEY = "secretKey";
+import { config } from './config/dotenv.config.js';
+export const PRIVATE_KEY = config.PRIVATE_KEY;
+export const clientID = config.clientID;
+export const clientSecret = config.clientSecret;
+export const callbackURL = config.callbackURL;
 
 export const createHash = password => bcrypt.hashSync(password, bcrypt.genSaltSync(10));
 export const isValidPassword = (user, password) => bcrypt.compareSync(password, user.password);

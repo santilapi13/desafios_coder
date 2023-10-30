@@ -2,9 +2,9 @@ import passport from 'passport';
 import local from 'passport-local'
 import github from 'passport-github2'
 import jwt from "passport-jwt";
-import { usersModel } from '../dao/models/users.model.js'
+import { usersModel } from '../../DAO/model/user.model.js'
 import { createHash, isValidPassword } from '../util.js'
-import { PRIVATE_KEY } from '../util.js'
+import { PRIVATE_KEY, clientID, clientSecret, callbackURL } from '../util.js'
 
 const LocalStrategy = local.Strategy;
 const GitHubStrategy = github.Strategy;
@@ -87,9 +87,9 @@ export const initializePassport = () => {
 	}));
 
 	passport.use('github', new GitHubStrategy({
-		clientID: "Iv1.f2d39cec49bb29e7",
-		clientSecret: "f63e75089320c560db4de666de8705a06e8b53b5",
-		callbackURL: "http://localhost:8080/api/sessions/githubcallback"
+		clientID,
+		clientSecret,
+		callbackURL
 	}, async (accessToken, refreshToken, profile, done) => {
 		try {
 			console.log("Estrategia passport utilizada: Estrategia GitHub");
