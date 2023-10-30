@@ -28,6 +28,26 @@ class CartsService {
     async validateCartId(cid) {
         return await this.dao.validateCartId(cid);
     }
+
+    async getProductById(cid, pid) {
+        return await this.dao.getProductById(cid, pid);
+    }
+
+    async updateAmountOfProductInCart(cid, pid, quantity) {
+        return await this.dao.updateAmountOfProductInCart(cid, pid, quantity, subtotal);
+    }
+
+    async createProductInCart(cid, product) {
+        return await this.dao.createProductInCart(cid, product);
+    }
+
+    async deleteProductFromCart(cid, pid) {
+        return await this.dao.deleteProductFromCart(cid, pid);
+    }
+
+    async updateCart(cid, products) {
+        return await this.dao.updateCart(cid, products);
+    }
 }
 
 export const cartsService = new CartsService(DAO);

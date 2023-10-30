@@ -38,17 +38,15 @@ async function getCartById(req, res) {
     let { cid } = req.params;
 
     try {
-        if (!mongoose.Types.ObjectId.isValid(cid))    
-            return res.status(400).json({error:"Error - Invalid cart id format"});
+        let idValidation = await cartsService.validateCartId(cid);
+        if (idValidation.error)
+            return res.sendUserError(idValidation.msg);
 
-        const cart = await cartModel.findOne({_id: cid});
-        
-        if (!cart)
-            return res.status(404).json({status: 'error', msg: `Error - Cart ${cid} not found`});
+        const cart = idValidation.cart;
 
-        res.status(200).json({status: 'success', cart});
+        res.sendSuccess(cart);
     } catch (error) {
-        res.status(500).json({error: "Unexpected error", detail: error.message});
+        res.sendServerError(error.message);
     }
 }
 
@@ -57,40 +55,36 @@ async function addProductToCart(req, res) {
     let { cid, pid } = req.params;
 
     try {
-        let validation = await validateIds(cid, pid);
-        if (validation.error)
-            return res.status(400).json({error: validation.msg})
+        let pidValidation = await productsService.validateProductId(pid);
+        if (pidValidation.error)
+            return res.sendUserError(pidValidation.msg);
 
-        let { product, cart } = validation;
+        let cidValidation = await cartsService.validateCartId(cid);
+        if (cidValidation.error)
+            return res.sendUserError(cidValidation.msg);
+
+        let product = pidValidation.product;
+        let cart = cidValidation.cart;
 
         // ¿Reducir directamente el stock del product en la coleccion Products?
         let resultado;
-        let existingProduct = await cartModel.findOne({_id: cid, "products.product": pid}, {"products.$": 1});
+        let existingProduct = await cartsService.getProductById(cid, pid);
 
         if (existingProduct) {
-            existingProduct = existingProduct.products[0]
-            resultado = await cartModel.updateOne(
-                {_id: cid, "products.product": pid}, 
-                {$set: {
-                    "products.$.quantity": existingProduct.quantity + 1,
-                    "products.$.subtotal": existingProduct.subtotal + product.price
-                }}
-            );
+            existingProduct = existingProduct.products[0];
+            resultado = await cartsService.updateAmountOfProductInCart(cid, pid, existingProduct.quantity + 1, existingProduct.subtotal + product.price);
         } else {
             let newProduct = {
                 product: pid,
                 quantity: 1,
                 subtotal: product.price
             }
-            resultado = await cartModel.updateOne(
-                {_id: cid},
-                {$push: {"products": newProduct}}
-            );
+            resultado = await cartsService.createProductInCart(cid, newProduct);
         }
 
-        res.status(201).json({status: 'success', msg: `Product added to cart successfully: ${resultado}`});
+        res.sendSuccess(`Product added to cart ${cart} successfully: ${resultado}`);
     } catch (error) {
-        res.status(500).json({error: "Unexpected error", detail: error.message});
+        res.sendServerError(error.message);
     }
 }
 
@@ -99,15 +93,18 @@ async function deleteProductFromCart(req, res) {
     let { cid, pid } = req.params;
 
     try {
-        let validation = await validateIds(cid, pid);
-        if (validation.error)
-            return res.status(400).json({error: validation.msg})
+        let pidValidation = await productsService.validateProductId(pid);
+        if (pidValidation.error)
+            return res.sendUserError(pidValidation.msg);
 
-        let resultado = await cartModel.updateOne({_id: cid}, {$pull: {products: {product: pid}}});
-        res.status(200).json({status: 'success', msg: `Product with id ${pid} deleted successfully from cart ${cid}: ${resultado}`});
+        let cidValidation = await cartsService.validateCartId(cid);
+        if (cidValidation.error)
+            return res.sendUserError(cidValidation.msg);
 
+        let resultado = await cartsService.deleteProductFromCart(cid, pid);
+        res.sendSuccess(`Product with id ${pid} deleted successfully from cart ${cid}: ${resultado}`);
     } catch (error) {
-        res.status(500).json({error: "Unexpected error", detail: error.message});
+        res.sendServerError(error.message);
     }
 }
 
@@ -116,38 +113,32 @@ async function updateCart(req, res) {
     let { cid } = req.params;
 
     try {
-        if (!mongoose.Types.ObjectId.isValid(cid))
-            return res.status(400).json({error:"Error - Invalid cart id format"});
+        let cidValidation = await cartsService.validateCartId(cid);
+        if (cidValidation.error)
+            return res.sendUserError(cidValidation.msg);
 
-        const cart = await cartModel.findById(cid);
-        if (!cart)
-            return res.status(404).json({status: 'error', msg: `Error - Cart ${cid} not found`});
+        let { products } = req.body;
 
-        let {products} = req.body;
         if (!Array.isArray(products))
-            return res.status(400).json({status: 'error', msg: 'Error - Products should be an array of products'})
+            return res.sendUserError("Products should be an array of products");
 
         for (const product of products) {
             if (!product.product || !product.quantity)
-                return res.status(400).json({status: 'error', msg: 'Error - All products must have an id and a quantity'})
+                return res.sendUserError("All products must have an id and a quantity");
             
-            let product_id = product.product._id;
-            if (!mongoose.Types.ObjectId.isValid(product_id))
-                return res.status(400).json({error:"Error - Invalid product id format"});
+            let pid = product.product._id;
+            let pidValidation = await productsService.validateProductId(pid);
+            if (pidValidation.error)
+                return res.sendUserError(pidValidation.msg);
 
-            let productExists = await productModel.findById(product_id);
-
-            if (!productExists)
-                return res.status(400).json({error:"Error - Product id not found"});
-
-            let price = (await productModel.findById(product_id)).price;
+            let price = (await productsService.getProductById(pid)).price;
             product.subtotal = price * product.quantity;
         }
 
-        let resultado = await cartModel.updateOne({_id: cid}, {$set: {products}});
-        res.status(200).json({status: 'success', msg: `Cart ${cid} updated successfully: ${resultado}`});
+        let resultado = await cartsService.updateCart(cid, products);
+        res.sendSuccess(`Cart ${cid} updated successfully: ${resultado}`);
     } catch (error) {
-        res.status(500).json({error: "Unexpected error", detail: error.message});
+        res.sendServerError(error.message);
     }
 }
 
@@ -156,22 +147,27 @@ async function updateAmountOfProductInCart(req, res) {
     let { cid, pid } = req.params;
 
     try {
-        let validation = validateIds(cid, pid);
-        if (validation.error)
-            return res.status(400).json({error: validation.msg})
+        let pidValidation = await productsService.validateProductId(pid);
+        if (pidValidation.error)
+            return res.sendUserError(pidValidation.msg);
+
+        let product = pidValidation.product;
+
+        let cidValidation = await cartsService.validateCartId(cid);
+        if (cidValidation.error)
+            return res.sendUserError(cidValidation.msg);
 
         let { quantity } = req.body;
         if (!quantity)
-            return res.status(400).json({status: 'error', msg: 'Error - New quantity must be provided.'})
+            return res.sendUserError("New quantity must be provided.");
         quantity = parseInt(quantity);
         if (isNaN(quantity) || quantity <= 0)
-            return res.status(400).json({status: 'error', msg: 'Error - New quantity must be a positive integer.'})
+            return res.sendUserError("New quantity must be a positive integer.");
 
-
-        let resultado = await cartModel.updateOne({_id: cid, "products.product": pid}, {$set: {"products.$.quantity": quantity}});
-        res.status(200).json({status: 'success', msg: `Product with id ${pid} quantity updated successfully to ${quantity}: ${resultado}`});
+        let resultado = await cartsService.updateAmountOfProductInCart(cid, pid, quantity, product.price * quantity);
+        return res.sendSuccess(`Product with id ${pid} quantity updated successfully to ${quantity}: ${resultado}`);
     } catch (error) {
-        res.status(500).json({error: "Unexpected error", detail: error.message});
+        res.sendServerError(error.message);
     }
 }
 
@@ -180,18 +176,15 @@ async function deleteCart(req, res) {
     let { cid } = req.params;
 
     try {
-        if (!mongoose.Types.ObjectId.isValid(cid))
-            return res.status(400).json({error:"Error - Invalid cart id format"});
+        let cidValidation = await cartsService.validateCartId(cid);
+        if (cidValidation.error)
+            return res.sendUserError(cidValidation.msg);
 
-        const cart = await cartModel.findById(cid);
-        if (!cart)
-            return res.status(404).json({status: 'error', msg: `Error - Cart ${cid} not found`});
-
-        let resultado = await cartModel.updateOne({_id: cid}, {$set: {products: []}});
-        res.status(200).json({status: 'success', msg: `Cart ${cid} deleted successfully: ${resultado}`});
-
+        let products = [];
+        let resultado = await cartsService.updateCart(cid, products);
+        return res.sendSuccess(`Cart ${cid} deleted successfully: ${resultado}`);
     } catch (error) {
-        res.status(500).json({error: "Unexpected error", detail: error.message});
+        res.sendServerError(error.message);
     }
 }
 
