@@ -1,43 +1,20 @@
 import Router from './router.js'
 import passport from 'passport';
-import { passportCall, generateJWT } from '../util.js';
+import { passportCall } from '../util.js';
+import sessionsController from '../controllers/sessionsController.js';
 
 export class SessionsRouter extends Router {
     init() {
-        this.post('/register', ['PUBLIC'], passportCall('register', '/register'), (req, res) => {
-            let { email } = req.body;
+        this.post('/register', ['PUBLIC'], passportCall('register', '/register'), sessionsController.register);
 
-            res.redirect(`/login?userCreated=${email}`);
-        });
-
-        this.post('/login', ['PUBLIC'], passportCall('login', '/login'), (req, res) => {
-            const user = req.user;
-            delete user.password;
-            
-            let token = generateJWT(user);
-
-            res.cookie('coderCookie', token, {
-                maxAge:1000*60*60,
-                httpOnly:true
-            });
-
-            res.status(200).redirect("/products");
-        });
+        this.post('/login', ['PUBLIC'], passportCall('login', '/login'), sessionsController.login);
 
         this.get('/github', ['PUBLIC'], passport.authenticate('github', {scope: ['user:email']}), (req, res) => {});
 
-        this.get('/github/callback', ['PUBLIC'], passportCall('github', '/login'), (req, res) => {
-            req.session.user = req.user;
-            res.redirect('/products');
-        });
+        this.get('/githubcallback', ['PUBLIC'], passportCall('github', '/login'), sessionsController.github);
 
-        this.get('/logout', ['USER', 'ADMIN'], (req, res) => {
-            res.clearCookie('coderCookie');
-            res.redirect("/login?message=Logged out successfully.");
-        });
+        this.get('/logout', ['USER', 'ADMIN'], sessionsController.logout);
 
-        this.get('/current', ['USER', 'ADMIN'], (req, res) => {
-            res.sendSuccess(req.user);
-        });
+        this.get('/current', ['USER', 'ADMIN'], sessionsController.current);
     }
 }

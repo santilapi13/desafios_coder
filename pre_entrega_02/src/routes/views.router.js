@@ -24,6 +24,8 @@ export class ViewsRouter extends Router {
         this.get('/register', ["PUBLIC"], alreadyAuthenticated, viewsController.getRegister);
         
         this.get('/login', ["PUBLIC"], alreadyAuthenticated, viewsController.getLogin);
+
+        this.get('*', ["PUBLIC"], viewsController.getNotFound)
     }
 }
 

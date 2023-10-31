@@ -172,4 +172,8 @@ function getLogin(req, res) {
     res.renderSuccess("login", payload)
 }
 
-export default { getHome, getProfile, getProducts, getProductById, getCartById, getRegister, getLogin };
+async function getNotFound(req, res) {
+    res.renderUserError("notfound", {msg: "Page not found"});
+}
+
+export default { getHome, getProfile, getProducts, getProductById, getCartById, getRegister, getLogin, getNotFound };

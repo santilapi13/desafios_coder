@@ -57,11 +57,6 @@ app.use("/api/carts", cartsRouter.getRouter());
 app.use("/api/sessions", sessionsRouter.getRouter());
 app.use("/", viewsRouter.getRouter());
 
-app.get('*', (req, res) => {
-    res.setHeader("Content-Type", "text/plain");
-    res.status(404).send('error 404 - page not found');
-});
-
 const serverExpress = app.listen(PORT, () => {
     console.log(`Server corriendo en puerto ${PORT}`);
 });
