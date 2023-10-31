@@ -71,8 +71,9 @@ async function addProductToCart(req, res) {
         let existingProduct = await cartsService.getProductById(cid, pid);
 
         if (existingProduct) {
-            existingProduct = existingProduct.products[0];
-            resultado = await cartsService.updateAmountOfProductInCart(cid, pid, existingProduct.quantity + 1, existingProduct.subtotal + product.price);
+            let productInCart = existingProduct.products[0];
+            let product = productInCart.product;
+            resultado = await cartsService.updateAmountOfProductInCart(cid, pid, productInCart.quantity + 1, productInCart.subtotal + product.price);
         } else {
             let newProduct = {
                 product: pid,
@@ -84,6 +85,7 @@ async function addProductToCart(req, res) {
 
         res.sendSuccess(`Product added to cart ${cart} successfully: ${resultado}`);
     } catch (error) {
+        console.log(error.message);
         res.sendServerError(error.message);
     }
 }

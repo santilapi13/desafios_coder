@@ -5,7 +5,7 @@ export class CartsMongoDAO {
     constructor() {
     }
 
-    async validateCartId(pid) {
+    async validateCartId(cid) {
         if (!mongoose.Types.ObjectId.isValid(cid))
             return {
                 error: true,

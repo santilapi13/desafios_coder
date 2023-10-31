@@ -1,6 +1,14 @@
 import Router from './router.js';
 import viewsController from '../controllers/viewsController.js';
 
+const alreadyAuthenticated = (req, res, next) => {
+    if(req.cookies.coderCookie) {
+        return res.redirect('/profile');
+    }
+
+    next();
+}
+
 export class ViewsRouter extends Router {
     init() {
         this.get('/', ["PUBLIC"], viewsController.getHome);

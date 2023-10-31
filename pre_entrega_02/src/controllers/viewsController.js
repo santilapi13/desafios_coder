@@ -1,15 +1,9 @@
 import { productsService } from '../../services/products.service.js';
-
-const alreadyAuthenticated = (req, res, next) => {
-    if(req.cookies.coderCookie) {
-        return res.redirect('/profile');
-    }
-
-    next();
-}
+import { cartsService } from '../../services/carts.service.js';
 
 async function getHome(req, res) {
     const logged = req.user ? true : false;
+    console.log(req.user)
     res.renderSuccess('home', {logged});
 }
 
@@ -86,20 +80,16 @@ async function getProducts(req, res) {
 
 async function getProductById(req, res) {
     let { pid } = req.params;
-
-    let product;
-    try {
-        product = await productsService.getProductById(pid);
-    } catch (error) {
-        res.sendUserError("Invalid id format");
-    }
-
-    if (!product)
-        return res.sendUserError("Product not found");
         
     try {
-        let {title, price, description, code, category, stock} = product.toObject();
-        res.renderSucess("product", {
+        let pidValidation = await productsService.validateProductId(pid);
+        if (pidValidation.error)
+            return res.renderUserError("notfound", {msg: pidValidation.msg});
+
+        const product = pidValidation.product;
+
+        let {title, price, description, code, category, stock} = product;
+        res.renderSuccess("product", {
             title,
             price,
             description,
@@ -110,7 +100,7 @@ async function getProductById(req, res) {
             logged: true
         });
     } catch (error) {
-        res.status(500).render("notfound", {msg: error.message});
+        res.renderServerError("notfound", {msg: error.message});
     }
 }
 
@@ -119,16 +109,11 @@ async function getCartById(req, res) {
     let { cid } = req.params;
 
     try {
-        if (!mongoose.Types.ObjectId.isValid(cid))
-            return res.status(400).render("notfound", {
-                msg: "Error - Invalid cart id format"
-            });
+        let cidValidation = await cartsService.validateCartId(cid);
+        if (cidValidation.error)
+            return res.renderUserError("notfound", {msg: cidValidation.msg});
 
-        const cart = await cartModel.findOne({_id: cid});
-        if (!cart)
-            return res.status(404).render("notfound", {
-                msg: `Error - Cart ${cid} not found`
-            });
+        const cart = cidValidation.cart;
 
         let products = [];
         cart.products.forEach(product => {
@@ -140,14 +125,14 @@ async function getCartById(req, res) {
             products.push(newProduct);
         });
 
-        res.status(200).render("carts", {
+        res.renderSuccess("carts", {
             title: "Carrito de compras",
             products: products,
             cid,
             logged: true
         });
     } catch (error) {
-        res.status(500).render("notfound", {msg: error.message});
+        res.renderServerError("notfound", {msg: error.message});
     }
 }
 

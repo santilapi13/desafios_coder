@@ -1,4 +1,4 @@
-import { CartsMongoDAO as DAO } from "../DAO/cartsMongoDAO";
+import { CartsMongoDAO as DAO } from "../DAO/cartsMongoDAO.js";
 
 class CartsService {
     constructor(dao) {
@@ -33,7 +33,7 @@ class CartsService {
         return await this.dao.getProductById(cid, pid);
     }
 
-    async updateAmountOfProductInCart(cid, pid, quantity) {
+    async updateAmountOfProductInCart(cid, pid, quantity, subtotal) {
         return await this.dao.updateAmountOfProductInCart(cid, pid, quantity, subtotal);
     }
 
