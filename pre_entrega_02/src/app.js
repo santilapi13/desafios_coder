@@ -4,6 +4,7 @@ import { ProductsRouter } from './routes/products.router.js';
 import { CartsRouter } from './routes/carts.router.js';
 import { SessionsRouter } from './routes/sessions.router.js';
 import { ViewsRouter } from './routes/views.router.js';
+import cors from 'cors';
 
 import { PRIVATE_KEY } from './util.js'
 import { initializePassport } from './config/passport.config.js'
@@ -27,6 +28,8 @@ const productsRouter = new ProductsRouter();
 const cartsRouter = new CartsRouter();
 const sessionsRouter = new SessionsRouter();
 const viewsRouter = new ViewsRouter();
+
+app.use(cors());
 
 app.use(session({
     store: MongoStore.create({
