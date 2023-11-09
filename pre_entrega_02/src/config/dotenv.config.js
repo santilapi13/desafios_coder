@@ -9,5 +9,5 @@ export const config = {
 	clientID: process.env.clientID,
 	clientSecret: process.env.clientSecret,
 	callbackURL: process.env.callbackURL,
-	PERSISTENCE: process.env.PERSISTENCE || "FS"
+	PERSISTENCE: process.env.PERSISTENCE
 }

@@ -10,6 +10,7 @@ const __dirname = dirname(__filename);
 export default __dirname;
 
 import { config } from './config/dotenv.config.js';
+console.log(config)
 export const PRIVATE_KEY = config.PRIVATE_KEY;
 export const clientID = config.clientID;
 export const clientSecret = config.clientSecret;
