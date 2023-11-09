@@ -9,17 +9,25 @@ const alreadyAuthenticated = (req, res, next) => {
     next();
 }
 
+const nonAuthenticated = (req, res, next) => {
+    if(!req.cookies.coderCookie) {
+        return res.redirect('/login');
+    }
+
+    next();
+}
+
 export class ViewsRouter extends Router {
     init() {
         this.get('/', ["PUBLIC"], viewsController.getHome);
 
-        this.get('/profile', ["USER", "ADMIN"], viewsController.getProfile);
+        this.get('/profile', ["PUBLIC"], nonAuthenticated, viewsController.getProfile);
 
-        this.get('/products', ["USER", "ADMIN"], viewsController.getProducts);
+        this.get('/products', ["PUBLIC"], nonAuthenticated, viewsController.getProducts);
 
-        this.get('/products/:pid', ["USER", "ADMIN"], viewsController.getProductById);
+        this.get('/products/:pid', ["PUBLIC"], nonAuthenticated, viewsController.getProductById);
 
-        this.get('/carts/:cid', ["USER", "ADMIN"],  viewsController.getCartById);
+        this.get('/carts/:cid', ["PUBLIC"],  nonAuthenticated, viewsController.getCartById);
 
         this.get('/register', ["PUBLIC"], alreadyAuthenticated, viewsController.getRegister);
         

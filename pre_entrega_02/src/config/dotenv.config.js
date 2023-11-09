@@ -8,5 +8,6 @@ export const config = {
 	PRIVATE_KEY: process.env.PRIVATE_KEY,
 	clientID: process.env.clientID,
 	clientSecret: process.env.clientSecret,
-	callbackURL: process.env.callbackURL
+	callbackURL: process.env.callbackURL,
+	PERSISTENCE: process.env.PERSISTENCE || "FS"
 }

@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import __dirname from '../util.js';
 
-class ProductManager {
+class ProductFsDAO {
 
     #path;
 
@@ -72,4 +72,4 @@ class ProductManager {
 
 }
 
-export default ProductManager;
+export default ProductFsDAO;

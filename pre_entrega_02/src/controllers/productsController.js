@@ -1,14 +1,6 @@
 import { productsService } from '../../services/products.service.js';
 import {io} from "../app.js";
-
-let validateProps = (body, ...validator) => {
-    let newProductProps = Object.keys(body);
-    for (const toValidateProp of validator) {
-        if (!newProductProps.includes(toValidateProp))
-            return false;
-    };
-    return true;
-}
+import ProductDTO from '../../DAO/DTOs/product.dto.js';
 
 async function getProducts(req, res) {
     res.setHeader("Content-Type", "application/json");
@@ -80,18 +72,18 @@ async function getProductById(req, res) {
 
 async function postProduct(req, res) {
     res.setHeader("Content-Type", "application/json");
-    let product = req.body;
+    let { title, description, code, price, status, stock, category, thumbnails } = req.body;
+    let product;
 
-    if (!validateProps(product, 'title', 'description', 'code', 'price', 'status', 'stock', 'category'))
-        return res.sendUserError('Error - Missing parameters (title, description, code, price, status, stock, category are required)');
+    try {
+        product = new ProductDTO({ title, description, code, price, status, stock, category, thumbnails });
+    } catch (error) {
+        return res.sendUserError(error.message);
+    }
 
     let codeProduct = await productsService.getProductByCode(product.code);
     if (codeProduct)
-        return res.sendUserError(`Error - Product code ${product.code} already exists`);
-
-    product.price = parseFloat(product.price);
-    product.status = !!product.status;
-    product.stock = parseInt(product.stock);
+        return res.sendUserError(`Product code ${product.code} already exists`);
 
     try {
         let newProduct = await productsService.createProduct(product);
@@ -104,7 +96,7 @@ async function postProduct(req, res) {
 
 async function putProduct(req, res) {
     res.setHeader("Content-Type", "application/json");
-    let {pid} = req.params;
+    let { pid } = req.params;
     let product = req.body;
     let validator = ['title', 'description', 'code', 'price', 'status', 'stock', 'category', 'thumbnails'];
 

@@ -1,14 +1,6 @@
 import mongoose from "mongoose";
 import { productModel } from './model/product.model.js';
 
-/*
-try {
-    await mongoose.connect('mongodb+srv://santilapiana02:aHGwx1LOTFj9kMur@e-commerce.un2yreb.mongodb.net/?retryWrites=true&w=majority');
-    console.log("MongoDB Online");
-} catch (error) {
-    console.log(error.message);
-}*/
-
 export class ProductsMongoDAO {
     constructor() {
     }

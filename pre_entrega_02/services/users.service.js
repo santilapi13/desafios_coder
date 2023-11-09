@@ -1,4 +1,4 @@
-import { UsersMongoDAO as DAO } from "../DAO/usersMongoDAO.js";
+import { Users as DAO } from "../DAO/factory.js"; 
 
 class UsersService {
     constructor(dao) {
