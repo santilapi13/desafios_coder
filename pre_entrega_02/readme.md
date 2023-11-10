@@ -12,3 +12,9 @@ A esta vista se puede llegar apretando en los nombres de los productos en la vis
 ## /carts/:cid
 Esta vista muestra el contenido del correspondiente carrito. Se puede acceder a la del carrito de prueba mediante botones en las anteriores vistas.
 
+# TODO
+- En purchaseCart en cartsController.js, obtener el email del comprador (usuario logeado), para pasárselo al ticketsService.
+- Terminar de revisar lo de la estrategia current: testear creacion, actualizacion y eliminacion de productos por parte del admin y ver lo del chat.
+- Hacer que, al momento de crear un nuevo usuario, se le cree y asigne un nuevo carrito vacío.
+- Modificar vistas para que, al momento de añadir productos a un carrito, se añadan al carrito del usuario de la sesión actual y no al hardcodeado.
+- Revisar tema de variables de entorno al ejecutar node ./src/app.js vs node ./app.js (ver si se puede hacer que funcione con el primero).

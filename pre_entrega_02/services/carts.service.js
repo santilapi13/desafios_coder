@@ -48,6 +48,7 @@ class CartsService {
     async updateCart(cid, products) {
         return await this.dao.updateCart(cid, products);
     }
+
 }
 
 export const cartsService = new CartsService(DAO);

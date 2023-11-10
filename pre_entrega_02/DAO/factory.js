@@ -1,6 +1,6 @@
 import { config } from "../src/config/dotenv.config.js";
 
-let Products, Carts, Users;
+let Products, Carts, Users, Tickets;
 switch (config.PERSISTENCE) {
     case "MONGO":
         console.log("Persistencia elegida: MONGO")
@@ -10,6 +10,8 @@ switch (config.PERSISTENCE) {
         Carts = Carts.CartsMongoDAO;
         Users = await import('./usersMongoDAO.js');
         Users = Users.UsersMongoDAO;
+        Tickets = await import('./ticketsMongoDAO.js');
+        Tickets = Tickets.TicketsMongoDAO;
         break;
 
     case "FS":
@@ -27,4 +29,4 @@ switch (config.PERSISTENCE) {
         throw new Error("Invalid persistence type");
 }
 
-export { Products, Carts, Users }; 
+export { Products, Carts, Users, Tickets }; 

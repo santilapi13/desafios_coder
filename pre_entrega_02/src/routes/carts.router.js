@@ -16,5 +16,7 @@ export class CartsRouter extends Router {
         this.put('/:cid/products/:pid', ["USER"], cartsController.updateAmountOfProductInCart);
         
         //this.delete('/:cid', ["USER", "ADMIN"], cartsController.deleteCart);
+
+        this.post('/:cid/purchase', ["USER"], cartsController.purchaseCart);
     }
 }

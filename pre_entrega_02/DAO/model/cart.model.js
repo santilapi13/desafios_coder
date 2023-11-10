@@ -26,5 +26,4 @@ cartSchema.pre('findOne',function() {
     })
 })
 
-
 export const cartModel = mongoose.model(cartCollection, cartSchema);

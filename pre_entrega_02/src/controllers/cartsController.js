@@ -1,5 +1,6 @@
 import { cartsService } from "../../services/carts.service.js";
 import { productsService } from "../../services/products.service.js";
+import { ticketsService } from "../../services/tickets.service.js";
 
 async function createCart(req, res) {
     res.setHeader("Content-Type", "application/json");
@@ -190,4 +191,50 @@ async function deleteCart(req, res) {
     }
 }
 
-export default { createCart, getCartById, addProductToCart, deleteProductFromCart, updateCart, updateAmountOfProductInCart, deleteCart };
+async function purchaseCart(req, res) {
+    res.setHeader("Content-Type", "application/json");
+    let { cid } = req.params;
+
+    try {
+        let cidValidation = await cartsService.validateCartId(cid);
+        if (cidValidation.error)
+            return res.sendUserError(cidValidation.msg);
+
+        let cart = cidValidation.cart;
+        let productsWithoutStock = [];
+        let productsPurchased = [];
+
+        for (const product of cart.products) {
+            let pid = product.product;
+            let pidValidation = await productsService.validateProductId(pid);
+            if (pidValidation.error)
+                return res.sendUserError(pidValidation.msg);
+
+            let stock = (await productsService.getProductById(pid)).stock;
+            if (stock >= product.quantity) {
+                let newStock = stock - product.quantity;
+                await productsService.updateProduct(pid, {stock: newStock});
+                productsPurchased.push(product);
+            } else {
+                productsWithoutStock.push(product);
+            }
+        }
+
+        await cartsService.updateCart(cid, productsWithoutStock);
+
+        let amount = 0;
+        for (const product of productsPurchased) {
+            amount += product.subtotal;
+        }
+        let purchaser; // TODO: obtener email del comprador (usuario logeado).
+        await ticketsService.createTicket({ amount, purchaser });
+
+        productsWithoutStock = productsWithoutStock.map(p => p.product);
+        return res.sendSuccess(`Purchase completed successfully. Products without stock: ${productsWithoutStock}`);
+    } catch (error) {
+        res.sendServerError(error.message);
+    }
+
+}
+
+export default { createCart, getCartById, addProductToCart, deleteProductFromCart, updateCart, updateAmountOfProductInCart, deleteCart, purchaseCart };
