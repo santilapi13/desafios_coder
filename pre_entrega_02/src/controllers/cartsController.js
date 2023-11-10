@@ -226,7 +226,7 @@ async function purchaseCart(req, res) {
         for (const product of productsPurchased) {
             amount += product.subtotal;
         }
-        let purchaser; // TODO: obtener email del comprador (usuario logeado).
+        let purchaser = req.user.email;
         await ticketsService.createTicket({ amount, purchaser });
 
         productsWithoutStock = productsWithoutStock.map(p => p.product);

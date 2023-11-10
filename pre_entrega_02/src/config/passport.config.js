@@ -77,7 +77,7 @@ export const initializePassport = () => {
                 return done(null, false, info);
             }
 
-			delete user.password;
+			user.password = undefined;
 			return done(null, user);
 		} catch (error) {
 			return done(error);
@@ -98,8 +98,8 @@ export const initializePassport = () => {
 				let completeNameParts = profile._json.name.split(' ');
 				let first_name = completeNameParts.slice(0, -1).join(' ');
 				let last_name = completeNameParts[completeNameParts.length - 1];
-				let age = 18;
-				let password = ' ';
+				let age = 18;  // Default age
+				let password = '';
 
 				let newUser = new UserDTO({ first_name, last_name, email, age, password });
 				user = await usersService.createUser(newUser);

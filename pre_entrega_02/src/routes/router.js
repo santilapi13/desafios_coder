@@ -42,7 +42,7 @@ export default class Router {
         };
         res.sendServerError = error => res.status(500).send({status: "error", error});
         res.sendUserError = error => res.status(400).send({status: "error", error});
-        res.sendAuthenticationError = error => res.status(401).send({status: "error", error});// .redirect("/login");
+        res.sendAuthenticationError = error => res.status(401).redirect("/login"); //.send({status: "error", error});
         res.sendAuthorizationError = error => res.status(403).send({status: "error", error});
 
         next();

@@ -21,13 +21,13 @@ export class ViewsRouter extends Router {
     init() {
         this.get('/', ["PUBLIC"], viewsController.getHome);
 
-        this.get('/profile', ["PUBLIC"], nonAuthenticated, viewsController.getProfile);
+        this.get('/profile', ["USER", "ADMIN"], nonAuthenticated, viewsController.getProfile);
 
-        this.get('/products', ["PUBLIC"], nonAuthenticated, viewsController.getProducts);
+        this.get('/products', ["USER", "ADMIN"], nonAuthenticated, viewsController.getProducts);
 
-        this.get('/products/:pid', ["PUBLIC"], nonAuthenticated, viewsController.getProductById);
+        this.get('/products/:pid', ["USER", "ADMIN"], nonAuthenticated, viewsController.getProductById);
 
-        this.get('/carts/:cid', ["PUBLIC"],  nonAuthenticated, viewsController.getCartById);
+        this.get('/carts/:cid', ["USER", "ADMIN"],  nonAuthenticated, viewsController.getCartById);
 
         this.get('/register', ["PUBLIC"], alreadyAuthenticated, viewsController.getRegister);
         
