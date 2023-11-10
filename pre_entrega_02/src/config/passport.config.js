@@ -2,9 +2,10 @@ import passport from 'passport';
 import local from 'passport-local'
 import github from 'passport-github2'
 import jwt from "passport-jwt";
-import { usersModel } from '../../DAO/model/user.model.js'
-import { createHash, isValidPassword } from '../util.js'
+import { usersService } from '../../services/users.service.js'
+import { isValidPassword } from '../util.js'
 import { PRIVATE_KEY, clientID, clientSecret, callbackURL } from '../util.js'
+import UserDTO from '../../DAO/DTOs/user.dto.js';
 
 const LocalStrategy = local.Strategy;
 const GitHubStrategy = github.Strategy;
@@ -26,26 +27,22 @@ export const initializePassport = () => {
 		}, async (req, username, password, done) => {
 			console.log("Estrategia passport utilizada: Estrategia Local Register");
 			const { first_name, last_name, email, age } = req.body;
-
-            if (!first_name || !last_name || !email || !age || !password) {
-                const info = {message: "Missing data"}
-                return done(null, false, info);
-            }
+			let newUser;
 
 			try {
-				let user = await usersModel.findOne({email: username});
+				newUser = new UserDTO({ first_name, last_name, email, age, password });
+			} catch (error) {
+				return done(null, false, error);
+			}
+
+			try {
+				let user = await usersService.getUserByEmail(email);
 				if (user) {
 					const info = {message: "Email already registered"}
 					return done(null, false, info);
 				}
-				const newUser = {
-					first_name,
-					last_name,
-					email,
-					age,
-					password: createHash(password)
-				}
-				let result = await usersModel.create(newUser);
+
+				let result = await usersService.createUser(newUser);
 				return done(null, result);
 			} catch (error) {
 				return done("Error al obtener el usuario: " + error);
@@ -57,7 +54,7 @@ export const initializePassport = () => {
 	});
 	
 	passport.deserializeUser(async (id, done) => {
-		let user = await usersModel.findById(id);
+		let user = await usersService.getUserById(id);
 		done(null, user);
 	});
 
@@ -69,7 +66,7 @@ export const initializePassport = () => {
         }
 
 		try {
-			const user = await usersModel.findOne({email});
+			const user = await usersService.getUserByEmail(email);
 			if (!user) {
 				const info = {message: "Invalid credentials"}
                 return done(null, false, info);
@@ -80,6 +77,7 @@ export const initializePassport = () => {
                 return done(null, false, info);
             }
 
+			delete user.password;
 			return done(null, user);
 		} catch (error) {
 			return done(error);
@@ -91,24 +89,25 @@ export const initializePassport = () => {
 		clientSecret,
 		callbackURL
 	}, async (accessToken, refreshToken, profile, done) => {
+		console.log("Estrategia passport utilizada: Estrategia GitHub");
+		let email = profile._json.email;
+
 		try {
-			console.log("Estrategia passport utilizada: Estrategia GitHub");
-			let user = await usersModel.findOne({email:profile._json.email});
+			let user = await usersService.getUserByEmail(email);
 			if (!user) {
-				let newUser = {  
-					first_name: profile._json.name,
-					last_name: '',
-					age: 18,
-					email: profile._json.email,
-					password: ''
-				}
-				let result = await usersModel.create(newUser);
-				done(null, result);
-			} else {
-				done(null, user);
+				let completeNameParts = profile._json.name.split(' ');
+				let first_name = completeNameParts.slice(0, -1).join(' ');
+				let last_name = completeNameParts[completeNameParts.length - 1];
+				let age = 18;
+				let password = ' ';
+
+				let newUser = new UserDTO({ first_name, last_name, email, age, password });
+				user = await usersService.createUser(newUser);
 			}
+
+			return done(null, user);
 		} catch (error) {
-			done(null, user);
+			return done(null, false, error);
 		}
 	}))
 

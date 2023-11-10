@@ -23,7 +23,6 @@ export const generateJWT = user => jwt.sign({ user }, PRIVATE_KEY, {expiresIn:'1
 
 export const passportCall = (strategy, failureRedirect) => {
     return async (req, res, next) => {
-        console.log("PassportCall llamado con estrategia: " + strategy);
         passport.authenticate(strategy, (err, user, info) => {
             if (err) return next(err);
 

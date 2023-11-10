@@ -9,7 +9,8 @@ export class UsersMongoDAO {
         if(filter["_id"] && !mongoose.Types.ObjectId.isValid(filter["_id"]))
             throw new Error('Invalid user ID.');
 
-        return await usersModel.find(filter);
+        let result = await usersModel.find(filter);
+        return result.length === 0 ? null : result;
     }
 
     async create(user) {

@@ -10,15 +10,17 @@ class UsersService {
     }
 
     async getUserById(id) {
-        return await this.dao.get({_id:id})
+        const user = await this.dao.get({_id:id})
+        return user ? user[0] : null;
     }
 
     async getUserByEmail(email) {
-        return await this.dao.get({email})
+        const user = await this.dao.get({email});
+        return user ? user[0] : null;
     }
 
-    async createUser(name, email) {
-        return await this.dao.create({name, email})
+    async createUser(user) {
+        return await this.dao.create(user)
     }
 }
 

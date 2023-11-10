@@ -8,8 +8,7 @@ async function register(req, res) {
 
 async function login(req, res) {
     const user = req.user;
-    delete user.password;
-    
+    console.log(user);
     let token = generateJWT(user);
 
     res.cookie('coderCookie', token, {
