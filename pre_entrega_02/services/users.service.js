@@ -1,4 +1,5 @@
-import { Users as DAO } from "../DAO/factory.js"; 
+import { Users as DAO } from "../DAO/factory.js";
+import { cartsService } from "./carts.service.js";
 
 class UsersService {
     constructor(dao) {
@@ -20,7 +21,9 @@ class UsersService {
     }
 
     async createUser(user) {
-        return await this.dao.create(user)
+        const cart = await cartsService.createCart({products:[]});
+        user.cart = cart._id;
+        return await this.dao.create(user);
     }
 }
 

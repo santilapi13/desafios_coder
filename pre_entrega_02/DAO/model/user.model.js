@@ -22,4 +22,17 @@ const userSchema = new mongoose.Schema({
     }
 });
 
+userSchema.pre('find',function() {
+    this.populate({
+        path:'cart'
+    })
+})
+
+userSchema.pre('findOne',function() {
+    this.populate({
+        path:'cart'
+    })
+})
+
+
 export const usersModel = mongoose.model(userCollection, userSchema);
