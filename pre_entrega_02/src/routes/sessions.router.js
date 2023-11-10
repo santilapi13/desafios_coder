@@ -9,7 +9,7 @@ export class SessionsRouter extends Router {
 
         this.post('/login', ['PUBLIC'], passportCall('login', '/login'), sessionsController.login);
 
-        this.get('/github', ['PUBLIC'], passport.authenticate('github', {scope: ['user:email']}), (req, res) => {});
+        this.get('/github', ['PUBLIC'], passport.authenticate('github', {}), (req, res) => {});
 
         this.get('/githubcallback', ['PUBLIC'], passportCall('github', '/login'), sessionsController.github);
 

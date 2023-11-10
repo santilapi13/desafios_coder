@@ -1,6 +1,6 @@
 import { createHash } from "../../src/util.js";
 
-export default class ProductDTO {
+export default class UserDTO {
 	constructor(product) {
         console.log(product)
         const { first_name, last_name, email, age, password } = product;
