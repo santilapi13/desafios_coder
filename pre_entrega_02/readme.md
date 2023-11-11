@@ -19,6 +19,4 @@ Esta vista muestra el contenido del correspondiente carrito. Se puede acceder a 
 # TODO
 - Testear proceso de compra completo.
 - Revisar lo del "chat de usuarios".
-- Crear un admin y testear que sólo él pueda crear, actualizar y eliminar productos.
-- Modificar vistas para que, al momento de añadir productos a un carrito, se añadan al carrito del usuario de la sesión actual y no al hardcodeado.
 - Corregir tema de variables de entorno al ejecutar node ./src/app.js vs node ./app.js (ver si se puede hacer que funcione con el primero).
