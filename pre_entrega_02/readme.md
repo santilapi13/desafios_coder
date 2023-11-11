@@ -12,6 +12,10 @@ A esta vista se puede llegar apretando en los nombres de los productos en la vis
 ## /carts/:cid
 Esta vista muestra el contenido del correspondiente carrito. Se puede acceder a la del carrito de prueba mediante botones en las anteriores vistas.
 
+### Cuenta administrador
+- Email: adminCoder@coder.com
+- adminCod3r123
+
 # TODO
 - Testear proceso de compra completo.
 - Revisar lo del "chat de usuarios".

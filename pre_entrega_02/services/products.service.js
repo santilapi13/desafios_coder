@@ -14,11 +14,13 @@ class ProductsService {
     }
 
     async getProductById(id) {
-        return await this.dao.get({_id:id});
+        const product = await this.dao.get({_id:id})
+        return product ? product[0] : null;
     }
 
     async getProductByCode(code) {
-        return await this.dao.get({code:code});
+        const product = await this.dao.get({code:code})
+        return product ? product[0] : null;
     }
 
     async createProduct(product) {

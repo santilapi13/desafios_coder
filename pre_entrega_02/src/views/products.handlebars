@@ -1,23 +1,49 @@
 <h1>Bienvenido, {{role}} {{first_name}} {{last_name}}</h1>
-<h2>Productos (pág {{page}}/{{totalPages}}):</h2>
+{{#if isUser}}
+    <h2>Productos (pág {{page}}/{{totalPages}}):</h2>
+{{else}}
+    <h2>ABM Productos (pág {{page}}/{{totalPages}}):</h2>
+    <form action="/api/products" method="post">
+        <input type="text" name="title" placeholder="title">
+        <input type="text" name="category" placeholder="category">
+        <input type="text" name="description" placeholder="description">
+        <input type="text" name="code" placeholder="code">
+        <input type="text" name="price" placeholder="price">
+        Status: <input type="checkbox" name="status" placeholder="status">
+        <br>
+        <input type="number" name="stock" placeholder="stock">
+        <br>
+        <br>
+        <input type="submit" value="Crear producto">
+    </form>
+    <p>Reiniciar página tras cada cambio. El front lindo de lo debo.</p>
+{{/if}}
+
 <ol id="products">
-    <ul class="menu"><a id="cart-id" href="/carts/6510a5067c41cba7c8e3a6a7">Ver carrito</a></ul>
+    {{#if isUser}}
+        <ul class="menu"><a id="cart-id" href="/carts/{{cart}}">Ver carrito</a></ul>
+    {{/if}}
     {{#each products}}
         <li>
             <ul class="menu">
                 <li>
                     <a href="/products/{{this.id}}">{{this.title}}</a>
                 </li>
+                
                 <li>
-                    <button class="btn-add-to-cart" data-product-id="{{this.id}}">Añadir al carrito</button>   
+                    {{#if isUser}}
+                        <button class="btn-add-to-cart" data-product-id="{{this.id}}">Añadir al carrito</button>
+                    {{else}}
+                        <button class="btn-delete" data-product-id="{{this.id}}">Eliminar</button>
+                    {{/if}}
                 </li>
             </ul>
             <br>
         </li>
     {{/each}}
 </ol>
-<br>
 
+<br>
 <ul class="menu">
     <li>
         <a href="/products?page=1">Pág.1</a>
@@ -51,4 +77,8 @@
 <br>
 {{>menu}}
 
-<script src="/assets/scripts/products.js"></script>
+{{#if isUser}}
+    <script src="/assets/scripts/products.js"></script>
+{{else}}
+    <script src="/assets/scripts/productsAdminDelete.js"></script>
+{{/if}}

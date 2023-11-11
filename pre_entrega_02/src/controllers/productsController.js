@@ -64,7 +64,7 @@ async function getProductById(req, res) {
         if (result.error)
             return res.sendUserError(result.msg);
 
-        result.sendSuccess(result.product);
+        res.sendSuccess(result.product);
     } catch (error) {
         res.sendServerError(error.message);
     }

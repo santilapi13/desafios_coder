@@ -14,7 +14,8 @@ async function getProfile(req, res) {
         last_name,
         email,
         age,
-        logged: true
+        logged: true,
+        cart: req.user.cart._id
     });
 }
 
@@ -58,7 +59,7 @@ async function getProducts(req, res) {
     const nextLink = hasNextPage ? `${baseUrl}?page=${nextPage}&limit=${limit}${sort ?"&sort=" + sort : ""}${query ? "&query=" + query: ""}` : null;
     let lastPageLink = `${baseUrl}?page=${totalPages}&limit=${limit}${sort ?"&sort=" + sort : ""}${query ? "&query=" + query: ""}`; 
 
-    let {first_name, last_name, role} = req.user;
+    let {first_name, last_name, role, cart} = req.user;
     let payload = {
         title: `Productos`,
         first_name,
@@ -72,7 +73,9 @@ async function getProducts(req, res) {
         nextPage: nextLink,
         lastPageLink,
         page,
-        logged: true
+        logged: true,
+        isUser: role === 'user',
+        cart: cart._id
     };
 
     res.renderSuccess("products", payload); 
@@ -97,7 +100,9 @@ async function getProductById(req, res) {
             category,
             stock,
             id: pid,
-            logged: true
+            logged: true,
+            isUser: req.user.role === 'user',
+            cart: req.user.cart._id
         });
     } catch (error) {
         res.renderServerError("notfound", {msg: error.message});

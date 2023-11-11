@@ -1,6 +1,5 @@
 <h1>{{title}}</h1>
 <ul> 
-    <li id="product-id">{{id}}</li>
     <li>Precio: ${{price}}</li>
     <li>Código: {{code}}</li>
     <li>Categoría: {{category}}</li>
@@ -8,12 +7,32 @@
     <li>Stock: {{stock}}</li>
 </ul>
 
-<button id="btn-add-to-cart" data-product-id="{{id}}" data-cart-id="6510a5067c41cba7c8e3a6a7">Añadir al carrito</button>
+{{#if isUser}}
+    <button id="btn-add-to-cart" data-product-id="{{id}}" data-cart-id="{{cart}}">Añadir al carrito</button>
+    <br>
+    <br>
+{{else}}
+    <h2>Formulario para actualizar producto:</h2>
+    <p>Recordar refrescar página luego de actualizar el producto.</p>
+    <form>
+        <p>Title:</p> <input id="title" type="text" name="title" placeholder="title" value="{{title}}">
+        <p>Category:</p> <input id="category" type="text" name="category" placeholder="category" value="{{category}}">
+        <p>Description:</p> <input id="description" type="text" name="description" placeholder="description" value="{{description}}">
+        <p>Code:</p> <input id="code" type="text" name="code" placeholder="code" value="{{code}}">
+        <p>Price:</p> <input id="price" type="text" name="price" placeholder="price" value="{{price}}">
+        <p>Status:</p> <input id="status" type="checkbox" name="status" placeholder="status" value="{{status}}">
+        <br>
+        <p>Stock:</p> <input id="stock" type="number" name="stock" placeholder="stock" value="{{stock}}">
+        <br>
+        <br>
+        <button id="btn-update" data-product-id="{{id}}">Actualizar Producto</button>
+    </form>
+{{/if}}
 
-<br>
-<br>
 <ul class="menu">
-    <a id="cart-id" href="/carts/6510a5067c41cba7c8e3a6a7">Ver carrito</a>
+    {{#if isUser}}
+        <a id="cart-id" href="/carts/{{cart}}">Ver carrito</a>
+    {{/if}}
     <a href="/products">Ver productos</a>
 </ul>
 
@@ -21,4 +40,8 @@
 <br>
 {{>menu}}
 
-<script src="/assets/scripts/addToCart.js"></script>
+{{#if isUser}}
+    <script src="/assets/scripts/addToCart.js"></script>
+{{else}}
+    <script src="/assets/scripts/productAdminPut.js"></script>
+{{/if}}

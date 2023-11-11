@@ -10,7 +10,8 @@ class CartsService {
     }
 
     async getCartById(id) {
-        return await this.dao.get({_id:id});
+        const cart = await this.dao.get({_id:id})
+        return cart ? cart[0] : null;
     }
 
     async createCart(cart) {

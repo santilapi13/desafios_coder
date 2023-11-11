@@ -41,8 +41,7 @@ export class ProductsMongoDAO {
                 result = await productModel.paginate(query, filter);
             }
         }
-
-        return result;
+        return result.length === 0 ? null : result;
     }
 
     async create(product) {
