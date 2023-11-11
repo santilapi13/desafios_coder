@@ -9,13 +9,14 @@ const ticketSchema = new mongoose.Schema({
     purchaser: { type: String, required: true },
 });
 
-ticketSchema.pre('create', function(next) {
-    ticketsModel.countDocuments({}, (err, count) => {
-        if (err) return next(err);
-
-        doc.code = (count + 1).toString();
-    })
-    next();
-})
+ticketSchema.pre('save', async function(next) {
+    try {
+        const count = await ticketsModel.countDocuments({});
+        this.code = (count + 1).toString();
+        next();
+    } catch (error) {
+        next(error);
+    }
+});
 
 export const ticketsModel = mongoose.model(ticketCollection, ticketSchema);

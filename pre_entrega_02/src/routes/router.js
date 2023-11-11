@@ -40,7 +40,7 @@ export default class Router {
             res.setHeader("Content-Type","text/html");
             res.status(500).render(view, error);
         };
-        res.sendServerError = error => res.status(500).send({status: "error", error});
+        res.sendServerError = error => res.status(500).send({status: "error", error: `Internal server error: ${error}`});
         res.sendUserError = error => res.status(400).send({status: "error", error});
         res.sendAuthenticationError = error => res.status(401).redirect("/login"); //.send({status: "error", error});
         res.sendAuthorizationError = error => res.status(403).send({status: "error", error});

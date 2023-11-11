@@ -1,4 +1,4 @@
-<h1>Lista de productos del carrito {{cid}}:</h1>
+<h1 id="cart-id" data-cart-id="{{cart}}">Lista de productos del carrito:</h1>
 
 <ul class="menu"><a href="/products">Ver productos</a></ul>
 <ol>
@@ -8,12 +8,21 @@
                 <li>Nombre: {{this.title}}</li>
                 <li>Cantidad: {{this.quantity}}</li>
                 <li>Subtotal: {{this.subtotal}}</li>
+                <!--
+                <button id="btn-delete-from-cart" data-product-id="{{id}}">x</button>
+                <button id="btn-add-one" data-product-id="{{id}}">+</button>
+                -->
             </ul>
             <br>
         </li>
     {{/each}}
 </ol>
 
+<h2>Total: {{total}}</h2>
+<form form action="/api/carts/{{cart}}/purchase" method="post"><input type="submit" value="Comprar"></form>
+
 <hr>
 <br>
 {{>menu}}
+
+<script src="/assets/scripts/cart.js"></script>

@@ -22,25 +22,36 @@
 <ol id="products">
     {{#if isUser}}
         <ul class="menu"><a id="cart-id" href="/carts/{{cart}}">Ver carrito</a></ul>
+        {{#each products}}
+            <li>
+                <ul class="menu">
+                    <li>
+                        <a href="/products/{{this.id}}">{{this.title}}</a>
+                    </li>
+                    
+                    <li>
+                            <button class="btn-add-to-cart" data-product-id="{{this.id}}">Añadir al carrito</button>
+                    </li>
+                </ul>
+                <br>
+            </li>
+        {{/each}}
+    {{else}}
+        {{#each products}}
+            <li>
+                <ul class="menu">
+                    <li>
+                        <a href="/products/{{this.id}}">{{this.title}}</a>
+                    </li>
+                    
+                    <li>
+                            <button class="btn-delete" data-product-id="{{this.id}}">Eliminar</button>
+                    </li>
+                </ul>
+                <br>
+            </li>
+        {{/each}}
     {{/if}}
-    {{#each products}}
-        <li>
-            <ul class="menu">
-                <li>
-                    <a href="/products/{{this.id}}">{{this.title}}</a>
-                </li>
-                
-                <li>
-                    {{#if isUser}}
-                        <button class="btn-add-to-cart" data-product-id="{{this.id}}">Añadir al carrito</button>
-                    {{else}}
-                        <button class="btn-delete" data-product-id="{{this.id}}">Eliminar</button>
-                    {{/if}}
-                </li>
-            </ul>
-            <br>
-        </li>
-    {{/each}}
 </ol>
 
 <br>

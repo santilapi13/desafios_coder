@@ -205,12 +205,9 @@ async function purchaseCart(req, res) {
         let productsPurchased = [];
 
         for (const product of cart.products) {
-            let pid = product.product;
-            let pidValidation = await productsService.validateProductId(pid);
-            if (pidValidation.error)
-                return res.sendUserError(pidValidation.msg);
+            let pid = product.product._id;
 
-            let stock = (await productsService.getProductById(pid)).stock;
+            let stock = product.product.stock;
             if (stock >= product.quantity) {
                 let newStock = stock - product.quantity;
                 await productsService.updateProduct(pid, {stock: newStock});
@@ -227,10 +224,15 @@ async function purchaseCart(req, res) {
             amount += product.subtotal;
         }
         let purchaser = req.user.email;
-        await ticketsService.createTicket({ amount, purchaser });
+        let ticket = null;
+        if (amount !== 0)
+            ticket = await ticketsService.createTicket({ amount, purchaser });
+        else
+            return res.sendUserError(`The cart is empty or all products are out of stock.${productsWithoutStock.length > 0 ? ` Products without stock: ${productsWithoutStock}` : ""}`);
+
 
         productsWithoutStock = productsWithoutStock.map(p => p.product);
-        return res.sendSuccess(`Purchase completed successfully. Products without stock: ${productsWithoutStock}`);
+        return res.sendSuccess(`Purchase completed successfully. Ticket: ${ticket}. ${productsWithoutStock.length > 0 ? ` Products without stock: ${productsWithoutStock}` : ""}`);
     } catch (error) {
         res.sendServerError(error.message);
     }

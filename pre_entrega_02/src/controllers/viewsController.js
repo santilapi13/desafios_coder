@@ -121,20 +121,23 @@ async function getCartById(req, res) {
         const cart = cidValidation.cart;
 
         let products = [];
+        let total = 0;
         cart.products.forEach(product => {
             let newProduct = {
                 ...product.product.toObject(),
                 quantity: product.quantity,
                 subtotal: product.subtotal
             }
+            total += product.subtotal;
             products.push(newProduct);
         });
 
         res.renderSuccess("carts", {
             title: "Carrito de compras",
             products: products,
-            cid,
-            logged: true
+            cart: cid,
+            logged: true,
+            total
         });
     } catch (error) {
         res.renderServerError("notfound", {msg: error.message});
