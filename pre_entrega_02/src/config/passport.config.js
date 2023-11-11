@@ -90,7 +90,7 @@ export const initializePassport = () => {
 		callbackURL
 	}, async (accessToken, refreshToken, profile, done) => {
 		console.log("Estrategia passport utilizada: Estrategia GitHub");
-		let email = profile._json.email;
+		let email = profile._json.login + "@github.com";
 
 		try {
 			let user = await usersService.getUserByEmail(email);
