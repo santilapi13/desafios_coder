@@ -15,6 +15,7 @@ import __dirname from './util.js';
 import { Server } from 'socket.io'
 import mongoose from "mongoose"
 import { config } from './config/dotenv.config.js';
+import errorHandler from './middlewares/errors/index.js';
 
 const PORT = config.PORT;
 const MONGO_URL = config.MONGO_URL;
@@ -34,7 +35,7 @@ app.use(express.static(__dirname + '/public'));
 app.use(cookieParser());
 initializePassport();
 app.use(passport.initialize());
-//app.use(passport.session());
+app.use(errorHandler);
 
 app.engine("handlebars", handlebars.engine());
 app.set("views", __dirname + "/views");

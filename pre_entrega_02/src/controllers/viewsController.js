@@ -1,5 +1,5 @@
-import { productsService } from '../../services/products.service.js';
-import { cartsService } from '../../services/carts.service.js';
+import { productsService } from '../services/products.service.js';
+import { cartsService } from '../services/carts.service.js';
 
 async function getHome(req, res) {
     const logged = req.user ? true : false;

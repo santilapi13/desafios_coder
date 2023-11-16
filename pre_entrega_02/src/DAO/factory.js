@@ -1,4 +1,4 @@
-import { config } from "../src/config/dotenv.config.js";
+import { config } from "../config/dotenv.config.js";
 
 let Products, Carts, Users, Tickets;
 switch (config.PERSISTENCE) {

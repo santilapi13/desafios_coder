@@ -2,10 +2,10 @@ import passport from 'passport';
 import local from 'passport-local'
 import github from 'passport-github2'
 import jwt from "passport-jwt";
-import { usersService } from '../../services/users.service.js'
+import { usersService } from '../services/users.service.js'
 import { isValidPassword } from '../util.js'
 import { PRIVATE_KEY, clientID, clientSecret, callbackURL } from '../util.js'
-import UserDTO from '../../DAO/DTOs/user.dto.js';
+import UserDTO from '../DAO/DTOs/user.dto.js';
 
 const LocalStrategy = local.Strategy;
 const GitHubStrategy = github.Strategy;

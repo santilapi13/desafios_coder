@@ -1,4 +1,4 @@
-import { createHash } from "../../src/util.js";
+import { createHash } from "../../util.js";
 
 export default class UserDTO {
 	constructor(user) {

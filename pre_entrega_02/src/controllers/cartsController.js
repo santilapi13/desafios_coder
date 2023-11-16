@@ -1,6 +1,6 @@
-import { cartsService } from "../../services/carts.service.js";
-import { productsService } from "../../services/products.service.js";
-import { ticketsService } from "../../services/tickets.service.js";
+import { cartsService } from "../services/carts.service.js";
+import { productsService } from "../services/products.service.js";
+import { ticketsService } from "../services/tickets.service.js";
 
 async function createCart(req, res) {
     res.setHeader("Content-Type", "application/json");

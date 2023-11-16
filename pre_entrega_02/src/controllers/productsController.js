@@ -1,6 +1,6 @@
-import { productsService } from '../../services/products.service.js';
+import { productsService } from '../services/products.service.js';
 import {io} from "../app.js";
-import ProductDTO from '../../DAO/DTOs/product.dto.js';
+import ProductDTO from '../DAO/DTOs/product.dto.js';
 
 async function getProducts(req, res) {
     res.setHeader("Content-Type", "application/json");
