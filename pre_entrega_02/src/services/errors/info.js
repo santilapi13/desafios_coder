@@ -1,4 +1,4 @@
-export const generateUserErrorInfo = (user) => {
+export const generateProductsErrorInfo = (user) => {
 	return `One or more properties were incomplete or not valid.
 		List of required properties:
 		* first_name : needs to be a String, received ${user.first_name}

@@ -3,7 +3,7 @@ import productsController from '../controllers/productsController.js';
 
 export class ProductsRouter extends Router {
     init() {
-        this.get('/', ['USER', 'ADMIN'], productsController.getProducts);
+        this.get('/', ["USER", "ADMIN"], productsController.getProducts);
         
         this.get('/:pid', ["USER", "ADMIN"], productsController.getProductById);
         

@@ -20,5 +20,4 @@ Además, permite visualizar el precio total y finalizar la compra, restando el s
 - adminCod3r123
 
 # TODO
-- Revisar lo del "chat de usuarios".
 - Corregir tema de variables de entorno al ejecutar node ./src/app.js vs node ./app.js (ver si se puede hacer que funcione con el primero).
