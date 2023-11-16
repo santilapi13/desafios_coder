@@ -3,6 +3,19 @@ import { dirname } from 'path';
 import bcrypt from 'bcrypt';
 import passport from 'passport';
 import jwt from 'jsonwebtoken';
+import { fakerES_MX as faker } from '@faker-js/faker'
+
+export const generateProduct = () => {
+    let title = faker.commerce.productName();
+    let description = faker.commerce.productDescription();
+    let code = faker.string.alphanumeric({ casing: 'upper', length:6 });
+    let price = faker.commerce.price({ min: 50, max: 4500, dec: 0 });
+    let stock = faker.number.int({min:1, max:100});
+    let thumbnail = [faker.image.url()];
+    let category = faker.commerce.productMaterial();
+    let status = true;
+    return {title, description, code, price, stock, thumbnail, category, status};
+}
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);

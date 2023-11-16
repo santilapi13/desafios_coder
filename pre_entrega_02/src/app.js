@@ -4,6 +4,7 @@ import { ProductsRouter } from './routes/products.router.js';
 import { CartsRouter } from './routes/carts.router.js';
 import { SessionsRouter } from './routes/sessions.router.js';
 import { ViewsRouter } from './routes/views.router.js';
+import { MocksRouter } from './routes/mocks.router.js';
 
 import { initializePassport } from './config/passport.config.js'
 import passport from 'passport';
@@ -24,6 +25,7 @@ const productsRouter = new ProductsRouter();
 const cartsRouter = new CartsRouter();
 const sessionsRouter = new SessionsRouter();
 const viewsRouter = new ViewsRouter();
+const mocksRouter = new MocksRouter();
 
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
@@ -41,6 +43,7 @@ app.set("view engine", "handlebars");
 app.use("/api/products", productsRouter.getRouter());
 app.use("/api/carts", cartsRouter.getRouter());
 app.use("/api/sessions", sessionsRouter.getRouter());
+app.use("/mockingproducts", mocksRouter.getRouter());
 app.use("/", viewsRouter.getRouter());
 
 const serverExpress = app.listen(PORT, () => {
