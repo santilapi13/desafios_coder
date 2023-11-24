@@ -20,4 +20,6 @@ Además, permite visualizar el precio total y finalizar la compra, restando el s
 - adminCod3r123
 
 # TODO
+- Ver qué pasa con el logger por consola.
+- Agregar logger donde ahora hay console.logs y ver si agregar warnings o errores.
 - Corregir tema de variables de entorno al ejecutar node ./src/app.js vs node ./app.js (ver si se puede hacer que funcione con el primero).
