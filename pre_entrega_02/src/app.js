@@ -17,6 +17,8 @@ import mongoose from "mongoose"
 import { config } from './config/dotenv.config.js';
 import errorHandler from './middlewares/errors/index.js';
 
+import { addLogger } from './utils/logger.js';
+
 const PORT = config.PORT;
 const MONGO_URL = config.MONGO_URL;
 
@@ -36,6 +38,7 @@ app.use(cookieParser());
 initializePassport();
 app.use(passport.initialize());
 app.use(errorHandler);
+app.use(addLogger);
 
 app.engine("handlebars", handlebars.engine());
 app.set("views", __dirname + "/views");
