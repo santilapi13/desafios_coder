@@ -1,5 +1,5 @@
 import winston from 'winston';
-import MODE from '../util.js'
+import { config } from '../config/dotenv.config.js';
 
 const customLevelsOptions = {
     levels: {
@@ -12,7 +12,7 @@ const customLevelsOptions = {
     },
     colors: {
 		fatal: 'red',
-		error: 'orange',
+		error: 'red',
 		warning: 'yellow',
 		info: 'blue',
         http: 'green',
@@ -25,7 +25,7 @@ const productionTransport = new winston.transports.Console({
     format: winston.format.combine(
         winston.format.colorize({ colors: customLevelsOptions.colors }),
         winston.format.timestamp(),
-        winston.format.json()
+        winston.format.simple()
     )
 });
 
@@ -34,7 +34,7 @@ const developmentTransport = new winston.transports.Console({
     format: winston.format.combine(
         winston.format.colorize({ colors: customLevelsOptions.colors }),
         winston.format.timestamp(),
-        winston.format.json()
+        winston.format.simple()
     )
 });
 
@@ -52,9 +52,9 @@ const logger = winston.createLogger({
     ]
 });
 
-if(MODE === "development")
+if(config.MODE === "development")
     logger.add(developmentTransport);
-else if (MODE === "production")
+else if (config.MODE === "production")
     logger.add(productionTransport);
 
 export const addLogger = (req, res, next) => {
