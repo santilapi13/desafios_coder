@@ -3,7 +3,7 @@ import { cartsService } from '../services/carts.service.js';
 
 async function getHome(req, res) {
     const logged = req.user ? true : false;
-    console.log(req.user)
+    req.logger.debug("user at home debug: " + req.user);
     res.renderSuccess('home', {logged});
 }
 
@@ -43,6 +43,7 @@ async function getProducts(req, res) {
     try {
         result = await productsService.getFilteredProducts(queryCondition, limit, page, sortBy);
     } catch (error) {
+        req.logger.error("Products get error: " + error.message);
         return res.sendServerError(error.message);
     }
 
@@ -109,7 +110,6 @@ async function getProductById(req, res) {
     }
 }
 
-// TODO: Hacer luego de que se implemente el carrito.
 async function getCartById(req, res) {
     let { cid } = req.params;
 

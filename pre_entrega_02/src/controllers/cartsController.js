@@ -30,6 +30,7 @@ async function createCart(req, res) {
         let resultado = await cartsService.create(cart);
         res.sendSuccess(`Cart created successfully: ${resultado}`);
     } catch (error) {
+        req.logger.error("Cart creation error: " + error.message);
         res.sendServerError(error.message);
     }
 }
@@ -47,6 +48,7 @@ async function getCartById(req, res) {
 
         res.sendSuccess(cart);
     } catch (error) {
+        req.logger.error("Cart get by id error: " + error.message);
         res.sendServerError(error.message);
     }
 }
@@ -86,7 +88,7 @@ async function addProductToCart(req, res) {
 
         res.sendSuccess(`Product added to cart ${cart} successfully: ${resultado}`);
     } catch (error) {
-        console.log(error.message);
+        req.logger.error("Product addition to cart error: " + error.message);
         res.sendServerError(error.message);
     }
 }
@@ -107,6 +109,7 @@ async function deleteProductFromCart(req, res) {
         let resultado = await cartsService.deleteProductFromCart(cid, pid);
         res.sendSuccess(`Product with id ${pid} deleted successfully from cart ${cid}: ${resultado}`);
     } catch (error) {
+        req.logger.error("Product deletion from cart error: " + error.message);
         res.sendServerError(error.message);
     }
 }
@@ -141,6 +144,7 @@ async function updateCart(req, res) {
         let resultado = await cartsService.updateCart(cid, products);
         res.sendSuccess(`Cart ${cid} updated successfully: ${resultado}`);
     } catch (error) {
+        req.logger.error("Cart update error: " + error.message);
         res.sendServerError(error.message);
     }
 }
@@ -170,6 +174,7 @@ async function updateAmountOfProductInCart(req, res) {
         let resultado = await cartsService.updateAmountOfProductInCart(cid, pid, quantity, product.price * quantity);
         return res.sendSuccess(`Product with id ${pid} quantity updated successfully to ${quantity}: ${resultado}`);
     } catch (error) {
+        req.logger.error("Amount of products in cart update error: " + error.message);
         res.sendServerError(error.message);
     }
 }
@@ -187,6 +192,7 @@ async function deleteCart(req, res) {
         let resultado = await cartsService.updateCart(cid, products);
         return res.sendSuccess(`Cart ${cid} deleted successfully: ${resultado}`);
     } catch (error) {
+        req.logger.error("Cart deletion error: " + error.message);
         res.sendServerError(error.message);
     }
 }
@@ -234,6 +240,7 @@ async function purchaseCart(req, res) {
         productsWithoutStock = productsWithoutStock.map(p => p.product);
         return res.sendSuccess(`Purchase completed successfully. Ticket: ${ticket}. ${productsWithoutStock.length > 0 ? ` Products without stock: ${productsWithoutStock}` : ""}`);
     } catch (error) {
+        req.logger.error("Cart purchase error: " + error.message);
         res.sendServerError(error.message);
     }
 

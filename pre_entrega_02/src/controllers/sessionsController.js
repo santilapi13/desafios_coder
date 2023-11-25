@@ -7,32 +7,48 @@ async function register(req, res) {
 }
 
 async function login(req, res) {
-    const user = req.user;
-    let token = generateJWT(user);
+    try {
+        const user = req.user;
+        let token = generateJWT(user);
 
-    res.cookie('coderCookie', token, {
-        maxAge:1000*60*60,
-        httpOnly:true
-    });
+        res.cookie('coderCookie', token, {
+            maxAge:1000*60*60,
+            httpOnly:true
+        });
 
-    res.status(200).redirect("/products");
+        res.status(200).redirect("/products");
+    } catch (error) {
+        req.logger.error("Login error: " + error.message);
+        res.sendServerError(error.message);
+    }
 }
 
 async function github(req, res) {
-    const user = req.user;
-    let token = generateJWT(user);
+    try {
+        const user = req.user;
+        let token = generateJWT(user);
 
-    res.cookie('coderCookie', token, {
-        maxAge:1000*60*60,
-        httpOnly:true
-    });
+        res.cookie('coderCookie', token, {
+            maxAge:1000*60*60,
+            httpOnly:true
+        });
 
-    res.redirect('/products');
+        res.redirect('/products');
+    } catch (error) {
+        req.logger.error("Github login error: " + error.message);
+        res.sendServerError(error.message);
+    }
 }
 
 async function logout(req, res) {
-    res.clearCookie('coderCookie');
-    res.redirect("/login?message=Logged out successfully.");
+    try {
+        res.clearCookie('coderCookie');
+        res.redirect("/login?message=Logged out successfully.");
+    } catch (error) {
+        req.logger.error("Logout error: " + error.message);
+        res.sendServerError(error.message);
+    
+    }
 }
 
 async function current(req, res) {

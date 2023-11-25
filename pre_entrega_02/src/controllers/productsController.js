@@ -1,9 +1,6 @@
 import { productsService } from '../services/products.service.js';
 import {io} from "../app.js";
 import ProductDTO from '../DAO/DTOs/product.dto.js';
-import CustomError from '../services/errors/CustomError.js';
-import EErrors from '../services/errors/enums.js';
-import { generateProductsErrorInfo } from '../services/errors/info.js';
 
 async function getProducts(req, res) {
     res.setHeader("Content-Type", "application/json");
@@ -11,39 +8,15 @@ async function getProducts(req, res) {
 
     limit = limit ? parseInt(limit) : 10;
     if (isNaN(limit) || limit < 0) {
-        /*
-        CustomError.createError({
-            name: "Products search error",
-            cause: generateProductsErrorInfo({ limit, page, sort, query }),
-            message: "Parameter <limit> must be a non-negative integer",
-            code: EErrors.INVALID_TYPES_ERROR
-        });
-        */
         return res.sendUserError("Parameter <limit> must be a non-negative integer");
     }
 
     page = page ? parseInt(page) : 1;
     if (isNaN(page) || page <= 0) {
-        /*
-        CustomError.createError({
-            name: "Products search error",
-            cause: generateProductsErrorInfo({ limit, page, sort, query }),
-            message: "Parameter <page> must be a positive integer",
-            code: EErrors.INVALID_TYPES_ERROR
-        });
-        */
         return res.sendUserError("Parameter <page> must be a positive integer");
     }
 
     if (sort && !['asc', 'desc'].includes(sort)) {
-        /*
-        CustomError.createError({
-            name: "Products search error",
-            cause: generateProductsErrorInfo({ limit, page, sort, query }),
-            message: "Parameter <sort> must be one of the following: asc, desc",
-            code: EErrors.INVALID_TYPES_ERROR
-        });
-        */
         return res.sendUserError("Parameter <sort> must be one of the following: asc, desc");
     }
 
@@ -58,6 +31,7 @@ async function getProducts(req, res) {
     try {
         result = await productsService.getFilteredProducts(queryCondition, limit, page, sortBy);
     } catch (error) {
+        req.logger.error("Products get error: " + error.message);
         return res.sendServerError(error.message);
     }
 
@@ -93,19 +67,12 @@ async function getProductById(req, res) {
         let result = await productsService.validateProductId(pid);
 
         if (result.error) {
-            /*
-            CustomError.createError({
-                name: "Product search error",
-                cause: generateProductsErrorInfo({ pid }),
-                message: result.msg,
-                code: EErrors.INVALID_TYPES_ERROR
-            });
-            */
             return res.sendUserError(result.msg);
         }
 
         res.sendSuccess(result.product);
     } catch (error) {
+        req.logger.error("Product get by id error: " + error.message);
         res.sendServerError(error.message);
     }
 }
@@ -130,6 +97,7 @@ async function postProduct(req, res) {
         io.emit('list-updated', {products: await productsService.getProducts(), msg: `Product ${product.title} added.`});
         res.sendSuccess(`Product ${newProduct} added successfully`);
     } catch (error) {
+        req.logger.error("Product post error: " + error.message);
         res.sendServerError(error.message);
     }
 }
@@ -178,6 +146,7 @@ async function putProduct(req, res) {
         io.emit('list-updated', {products: await productsService.getProducts(), msg: `Product with id ${pid} updated.`});
         res.sendSuccess(`Product with id ${pid} updated successfully: ${result}`);
     } catch (error) {
+        req.logger.error("Product update error: " + error.message);
         res.sendServerError(error.message);
     }
 }
@@ -195,6 +164,7 @@ async function deleteProduct(req, res) {
         io.emit('list-updated', {products: await productsService.getProducts(), msg: `Product with id ${pid} deleted.`});
         res.sendSuccess(`Product with id ${pid} deleted successfully: ${result}`);
     } catch (error) {
+        req.logger.error("Product deletion error: " + error.message);
         res.sendServerError(error.message);
     }
 }
