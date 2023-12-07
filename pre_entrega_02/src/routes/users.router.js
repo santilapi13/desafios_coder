@@ -19,8 +19,12 @@ const checkCookie = (req, res, next) => {
 
 export class UsersRouter extends Router {
     init() {
+        this.get('/', ["ADMIN"], usersController.getUsers);
+
         this.post('/restorePassword', ["PUBLIC"], alreadyAuthenticated, usersController.restorePassword);
 
         this.post('/newPassword', ["PUBLIC"], alreadyAuthenticated, checkCookie, usersController.newPassword);
+
+        this.put('/premium/:uid', ["ADMIN"], usersController.premium);
     }
 }

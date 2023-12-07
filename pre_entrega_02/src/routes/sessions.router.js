@@ -13,8 +13,8 @@ export class SessionsRouter extends Router {
 
         this.get('/githubcallback', ['PUBLIC'], passportCall('github', '/login'), sessionsController.github);
 
-        this.get('/logout', ['USER', 'ADMIN'], sessionsController.logout);
+        this.get('/logout', ['USER', 'ADMIN', 'PREMIUM'], sessionsController.logout);
 
-        this.get('/current', ['USER', 'ADMIN'], sessionsController.current);
+        this.get('/current', ['USER', 'ADMIN', 'PREMIUM'], sessionsController.current);
     }
 }

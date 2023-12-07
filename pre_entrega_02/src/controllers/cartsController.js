@@ -69,7 +69,9 @@ async function addProductToCart(req, res) {
         let product = pidValidation.product;
         let cart = cidValidation.cart;
 
-        // ¿Reducir directamente el stock del product en la coleccion Products?
+        if (req.user.role === 'PREMIUM' && product.owner === req.user._id)
+            return res.sendUserError(`Premium users cannot add their own products to their carts.`);
+
         let resultado;
         let existingProduct = await cartsService.getProductById(cid, pid);
 

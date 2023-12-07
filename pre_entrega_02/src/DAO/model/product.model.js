@@ -15,7 +15,11 @@ const productSchema = new mongoose.Schema({
     category: String, // Se podria agregar otro atributo enum con el array de las categorias posibles
     thumbnail: [{
         type: String
-    }]
+    }],
+    owner: {
+        type: mongoose.Schema.ObjectId,
+        ref: "user"
+    }
 });
 
 productSchema.plugin(mongoosePaginate);

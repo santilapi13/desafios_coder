@@ -81,9 +81,10 @@ async function postProduct(req, res) {
     res.setHeader("Content-Type", "application/json");
     let { title, description, code, price, status, stock, category, thumbnails } = req.body;
     let product;
+    let owner = req.user._id;
 
     try {
-        product = new ProductDTO({ title, description, code, price, status, stock, category, thumbnails });
+        product = new ProductDTO({ title, description, code, price, status, stock, category, thumbnails, owner });
     } catch (error) {
         return res.sendUserError(error.message);
     }
@@ -112,6 +113,9 @@ async function putProduct(req, res) {
     if (idValidation.error)
         return res.sendUserError(idValidation.msg);
     let productToUpdate = idValidation.product;
+
+    if (req.user.role === 'premium' && productToUpdate.owner.toString() !== req.user._id.toString())
+        return res.sendUserError(`Premium user ${req.user.email} is not the owner of this product. Cannot update it.`);
 
     for (const toValidateProp of Object.keys(product)) {
         if (!validator.includes(toValidateProp))
@@ -158,6 +162,10 @@ async function deleteProduct(req, res) {
     let idValidation = await productsService.validateProductId(pid);
     if (idValidation.error)
         return res.sendUserError(idValidation.msg);
+
+    let productToDelete = idValidation.product;
+    if (req.user.role === 'premium' && productToDelete.owner.toString() !== req.user._id.toString())
+        return res.sendUserError(`Premium user ${req.user.email} is not the owner of this product. Cannot delete it.`);
 
     try {
         let result = await productsService.deleteProduct(pid);

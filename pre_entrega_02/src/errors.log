@@ -6,3 +6,4 @@
 {"level":"fatal","message":"Test - Fatal message","timestamp":"2023-11-25T15:24:52.048Z"}
 {"level":"error","message":"Changing santilapiana02@gmail.com password: Cannot access 'user' before initialization","timestamp":"2023-12-07T15:17:10.372Z"}
 {"level":"error","message":"Changing santilapiana02@gmail.com password: usersModel.update is not a function","timestamp":"2023-12-07T15:18:09.255Z"}
+{"level":"error","message":"Logout error: Cannot set headers after they are sent to the client","timestamp":"2023-12-07T16:56:56.464Z"}

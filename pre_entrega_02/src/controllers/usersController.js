@@ -4,6 +4,20 @@ import { usersService } from "../services/users.service.js";
 import { createHash } from "../util.js";
 import { generateJWT } from '../util.js';
 
+async function getUsers(req, res) {
+    try {
+        const users = await usersService.getUsers();
+        if (!users) {
+            return res.sendUserError("Users not found.");
+        }
+
+        return res.sendSuccess(users);
+    } catch (error) {
+        req.logger.error(`Getting users: ` + error.message);
+        return res.sendServerError(error.message);
+    }
+}
+
 const transport = nodemailer.createTransport({
     service:'gmail',
     port: 587,
@@ -82,4 +96,28 @@ async function newPassword(req, res) {
     return res.sendSuccess("Password changed.");
 }
 
-export default { restorePassword, newPassword }
+async function premium(req, res) {
+    const { uid } = req.params;
+
+    try {
+        let user = await usersService.getUserById(uid);
+        if (!user) {
+            return res.sendUserError("User not found.");
+        }
+
+        if (user.role === "admin")
+            return res.sendUserError("Admins can't get their role changed.");
+
+        req.logger.debug(`Changing ${uid} role from ${user.role} to ${user.role === "user" ? "premium" : "user"}`);
+
+        user = await usersService.updateUser(uid, { role: user.role === "user" ? "premium" : "user" });
+
+    } catch (error) {
+        req.logger.error(`Changing ${uid} role: ` + error.message);
+        return res.sendServerError(error.message);
+    }
+
+    return res.sendSuccess("Role changed.");
+}
+
+export default { restorePassword, newPassword, premium, getUsers }

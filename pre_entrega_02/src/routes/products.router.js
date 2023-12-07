@@ -3,14 +3,14 @@ import productsController from '../controllers/productsController.js';
 
 export class ProductsRouter extends Router {
     init() {
-        this.get('/', ["USER", "ADMIN"], productsController.getProducts);
+        this.get('/', ["USER", "ADMIN", "PREMIUM"], productsController.getProducts);
         
-        this.get('/:pid', ["USER", "ADMIN"], productsController.getProductById);
+        this.get('/:pid', ["USER", "ADMIN", "PREMIUM"], productsController.getProductById);
         
-        this.post('/', ["ADMIN"], productsController.postProduct);
+        this.post('/', ["ADMIN", "PREMIUM"], productsController.postProduct);
         
-        this.put('/:pid', ["ADMIN"], productsController.putProduct);
+        this.put('/:pid', ["ADMIN", "PREMIUM"], productsController.putProduct);
         
-        this.delete('/:pid', ["ADMIN"], productsController.deleteProduct);
+        this.delete('/:pid', ["ADMIN", "PREMIUM"], productsController.deleteProduct);
     }
 }
