@@ -1,2 +1,8 @@
 {"level":"error","message":"Test - Error message","timestamp":"2023-11-25T15:20:39.075Z"}
 {"level":"fatal","message":"Test - Fatal message","timestamp":"2023-11-25T15:20:39.076Z"}
+{"level":"error","message":"Test - Error message","timestamp":"2023-11-25T15:24:33.252Z"}
+{"level":"fatal","message":"Test - Fatal message","timestamp":"2023-11-25T15:24:33.253Z"}
+{"level":"error","message":"Test - Error message","timestamp":"2023-11-25T15:24:52.047Z"}
+{"level":"fatal","message":"Test - Fatal message","timestamp":"2023-11-25T15:24:52.048Z"}
+{"level":"error","message":"Changing santilapiana02@gmail.com password: Cannot access 'user' before initialization","timestamp":"2023-12-07T15:17:10.372Z"}
+{"level":"error","message":"Changing santilapiana02@gmail.com password: usersModel.update is not a function","timestamp":"2023-12-07T15:18:09.255Z"}

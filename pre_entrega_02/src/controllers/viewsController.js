@@ -184,4 +184,12 @@ async function getNotFound(req, res) {
     res.renderUserError("notfound", {msg: "Page not found"});
 }
 
-export default { getHome, getProfile, getProducts, getProductById, getCartById, getRegister, getLogin, getNotFound };
+async function getForgotPassword(req, res) {
+    res.renderSuccess("forgotPassword");
+}
+
+async function getRestorePassword(req, res) {
+    res.renderSuccess("restorePassword");
+}
+
+export default { getHome, getProfile, getProducts, getProductById, getCartById, getRegister, getLogin, getNotFound, getRestorePassword, getForgotPassword };

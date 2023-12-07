@@ -10,5 +10,7 @@ export const config = {
 	clientID: process.env.clientID,
 	clientSecret: process.env.clientSecret,
 	callbackURL: process.env.callbackURL,
-	PERSISTENCE: process.env.PERSISTENCE
+	PERSISTENCE: process.env.PERSISTENCE,
+	MAILER_USER: process.env.MAILER_USER,
+	MAILER_PASS: process.env.MAILER_PASS,
 }

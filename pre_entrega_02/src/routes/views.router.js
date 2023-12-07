@@ -33,6 +33,10 @@ export class ViewsRouter extends Router {
         
         this.get('/login', ["PUBLIC"], alreadyAuthenticated, viewsController.getLogin);
 
+        this.get('/forgotPassword', ["PUBLIC"], alreadyAuthenticated, viewsController.getForgotPassword);
+
+        this.get('/restorePassword', ["PUBLIC"], alreadyAuthenticated, viewsController.getRestorePassword);
+
         this.get('/loggerTest', ["PUBLIC"], (req, res) => {
             req.logger.debug("Test - Debug message");
             req.logger.http("Test - Http message");

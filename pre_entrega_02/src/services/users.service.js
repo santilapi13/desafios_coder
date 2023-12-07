@@ -20,10 +20,19 @@ class UsersService {
         return user ? user[0] : null;
     }
 
+    async checkUserCredentials(email, password) {
+        const user = await this.dao.get({email, password});
+        return user ? user[0] : null;
+    }
+
     async createUser(user) {
         const cart = await cartsService.createCart({products:[]});
         user.cart = cart._id;
         return await this.dao.create(user);
+    }
+
+    async updateUser(id, changes) {
+        return await this.dao.update(id, changes);
     }
 }
 
