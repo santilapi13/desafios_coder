@@ -20,8 +20,24 @@ import errorHandler from './middlewares/errors/index.js';
 
 import { addLogger } from './utils/logger.js';
 
+import swaggerJsdoc from swagger-jsdoc;
+import swaggerUiExpress from swagger-ui-express
+
 const PORT = config.PORT;
 const MONGO_URL = config.MONGO_URL;
+
+const swaggerOptions = {
+    definition: {
+        openapi: '3.0.1',
+        info: {
+            title: "e-commerce API - CoderHouse",
+            description: "Backend de un e-commerce como proyecto del curso de backend de CoderHouse"
+        }
+    },
+    apis: [`${__dirname}/docs/**/*.yaml`]
+}
+
+const specs = swaggerJsdoc(swaggerOptions);
 
 const app = express();
 
@@ -52,6 +68,9 @@ app.use("/api/sessions", sessionsRouter.getRouter());
 app.use("/mockingproducts", mocksRouter.getRouter());
 app.use("/api/users", usersRouter.getRouter());
 app.use("/", viewsRouter.getRouter());
+
+app.use('/apidocs', swaggerUiExpress.serve, swaggerUiExpress.setup(specs));
+
 
 const serverExpress = app.listen(PORT, () => {
     console.log(`Server corriendo en puerto ${PORT}`);
