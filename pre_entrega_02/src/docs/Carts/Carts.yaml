@@ -233,24 +233,26 @@ requestBodies:
   createCart:
     type: object
     properties:
-      products: array
-      description: Lista de productos inicial del carrito
-      items:
-        product:
-          type: ObjectId
-          description: Referencia al id del producto correspondiente.
-        quantity:
-          type: integer
-          description: Cantidad del correspondiente producto en el carrito actual.
-      example:
-      - product: ObjectId('6413824hi3hre9272ye')
-        quantity: 12
-      - product: ObjectId('6413824hi3hdw9272aw')
-        quantity: 5
+      products: 
+        type: array
+        description: Lista de productos inicial del carrito
+        items:
+          product:
+            type: ObjectId
+            description: Referencia al id del producto correspondiente.
+          quantity:
+            type: integer
+            description: Cantidad del correspondiente producto en el carrito actual.
+    example:
+    - product: ObjectId('6413824hi3hre9272ye')
+      quantity: 12
+    - product: ObjectId('6413824hi3hdw9272aw')
+      quantity: 5
   updateAmountOfProductInCart:
     type: object
     properties:
-      quantity: integer
-      description: Nueva cantidad del producto en el carrito.
+      quantity:
+        type: integer
+        description: Nueva cantidad del producto en el carrito.
     example:
       quantity: 5

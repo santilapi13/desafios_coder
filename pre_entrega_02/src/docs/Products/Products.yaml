@@ -1,0 +1,254 @@
+paths:
+  /api/products/:
+    get:
+      summary: Obtiene todos los productos de la base de datos.
+      tags:
+        - Products
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          description: Cantidad máxima de productos a obtener.
+          schema:
+            $type: Integer
+        - name: page
+          in: query
+          required: false
+          description: Página de productos a obtener.
+          schema:
+            $type: Integer
+        - name: sort
+          in: query
+          required: false
+          description: Orden de los productos a obtener (ascendente o descendente).
+          schema:
+            $type: String
+        - name: query
+          in: query
+          required: false
+          description: Búsqueda de productos por categoría.
+          schema:
+            $type: String
+      responses:
+        "200":
+          description: Productos obtenidos satisfactoriamente.
+          content:
+            application/json:
+              schema:
+                $ref: '#components/schemas/Product'
+        "400":
+          description: Error del usuario. Los parámetros pasados por el usuario son inválidos. El query param <limit> debe ser un número entero no negativo. El query param <page> debe ser un número entero positivo. El query param <sort> debe ser un string con "asc" o "desc".
+        "500":
+          description: Error interno del servidor. Puede ser por query defectuosa o fallo de conexión con la base de datos.
+    post:
+      summary: Crea un nuevo producto.
+      tags:
+        - Products
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#components/requestBodies/createProduct'
+      responses:
+        "200":
+          description: Producto creado satisfactoriamente.
+          content:
+            application/json:
+              schema:
+                $ref: '#components/schemas/Product'
+        "400":
+          description: Error del usuario. El producto no pudo crearse debido a que los parámetros pasados por el usuario son inválidos. Deben incluirse obligatoriamente los campos title, description, code, price, status, stock, category.
+        "500":
+          description: Error interno del servidor. Puede ser por query defectuosa o fallo de conexión con la base de datos.
+  /api/products/:pid:
+    get:
+      summary: Obtiene un producto de la base de datos.
+      tags:
+        - Products
+      parameters:
+        - name: pid
+          in: path
+          required: true
+          description: ID del producto a obtener.
+          schema:
+            $type: String
+      responses:
+        "200":
+          description: Producto obtenido satisfactoriamente.
+          content:
+            application/json:
+              schema:
+                $ref: '#components/schemas/Product'
+        "400":
+          description: Error del usuario. El parámetro <pid> debe tener formato de ObjectID y debe pertenecer a un producto existente.
+        "500":
+          description: Error interno del servidor. Puede ser por query defectuosa o fallo de conexión con la base de datos.
+    put:
+      summary: Actualiza un producto de la base de datos.
+      tags:
+        - Products
+      parameters:
+        - name: pid
+          in: path
+          required: true
+          description: ID del producto a actualizar.
+          schema:
+            $type: String
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#components/requestBodies/updateProduct'
+      responses:
+        "200":
+          description: Producto actualizado satisfactoriamente.
+          content:
+            application/json:
+              schema:
+                $ref: '#components/schemas/Product'
+        "400":
+          description: Error del usuario. El producto no pudo actualizarse debido a que los parámetros pasados por el usuario son inválidos. El parámetro <pid> debe tener formato de ObjectID y debe pertenecer a un producto existente. Sólo se aceptan los campos title, description, code (no puede ser igual al de otro producto), price (float positivo), status, stock (entero no negativo), category y thumbnails. Los usuarios premium sólo pueden modificar los productos de su propiedad.
+        "500":
+          description: Error interno del servidor. Puede ser por query defectuosa o fallo de conexión con la base de datos.
+    delete:
+      summary: Elimina un producto de la base de datos.
+      tags:
+        - Products
+      parameters:
+        - name: pid
+          in: path
+          required: true
+          description: ID del producto a eliminar.
+          schema:
+            $type: String
+      responses:
+        "200":
+          description: Producto eliminado satisfactoriamente.
+          content:
+            application/json:
+              schema:
+                $ref: '#components/schemas/Product'
+        "400":
+          description: Error del usuario. El parámetro <pid> debe tener formato de ObjectID y debe pertenecer a un producto existente. Los usuarios premium sólo pueden eliminar los productos de su propiedad.
+        "500":
+          description: Error interno del servidor. Puede ser por query defectuosa o fallo de conexión con la base de datos.
+components:
+  schemas:
+    Products:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Nombre del producto.
+        description:
+          type: string
+          description: Descripción del producto.
+        code:
+          type: string
+          description: Código del producto. Debe ser único.
+        price:
+          type: number
+          description: Precio del producto.
+        stock:
+          type: integer
+          description: Stock del producto.
+        status:
+          type: boolean
+          description: Estado del producto. "true" es activo y "false" inactivo.
+        category:
+          type: string
+          description: Categoría del producto.
+        thumbnails:
+          type: array
+          description: Imágenes del producto.
+          items:
+            type: string
+            description: URL de la imagen.
+        owner:
+          type: ObjectId
+          description: ID del user con role "admin" o "premium" que creó el producto.
+      example:
+        title: "Producto 1"
+        description: "Descripción del producto 1"
+        code: "0001"
+        price: 1000
+        stock: 10
+        status: true
+        category: "Categoría 1"
+        thumbnails: ["https://www.imagen.com"]
+        owner: "5f7f1b9b7f6b9a1b9f7b6f9a"
+requestBodies:
+  createProduct:
+    type: object
+    properties:
+      title:
+        type: string
+        description: Nombre del producto.
+      description:
+        type: string
+        description: Descripción del producto.
+      code:
+        type: string
+        description: Código del producto. Debe ser único.
+      price:
+        type: number
+        description: Precio del producto.
+      stock:
+        type: integer
+        description: Stock del producto.
+      status:
+        type: boolean
+        description: Estado del producto. "true" es activo y "false" inactivo.
+      category:
+        type: string
+        description: Categoría del producto.
+      thumbnails:
+        type: array
+        description: Imágenes del producto.
+        items:
+          type: string
+          description: URL de la imagen.
+    example:
+      title: "Producto 1"
+      description: "Descripción del producto 1"
+      code: "0001"
+      price: 1000
+      stock: 10
+      status: true
+      category: "Categoría 1"
+      thumbnails: ["https://www.imagen.com"]
+  updateProduct:
+    type: object
+    properties:
+      title:
+        type: string
+        description: Nombre del producto.
+      description:
+        type: string
+        description: Descripción del producto.
+      code:
+        type: string
+        description: Código del producto. Debe ser único.
+      price:
+        type: number
+        description: Precio del producto.
+      stock:
+        type: integer
+        description: Stock del producto.
+      status:
+        type: boolean
+        description: Estado del producto. "true" es activo y "false" inactivo.
+      category:
+        type: string
+        description: Categoría del producto.
+      thumbnails:
+        type: array
+        description: Imágenes del producto.
+        items:
+          type: string
+          description: URL de la imagen.
+    example:
+      price: 1000
+      stock: 15
