@@ -20,8 +20,8 @@ import errorHandler from './middlewares/errors/index.js';
 
 import { addLogger } from './utils/logger.js';
 
-import swaggerJsdoc from swagger-jsdoc;
-import swaggerUiExpress from swagger-ui-express
+import swaggerJsdoc from "swagger-jsdoc";
+import swaggerUiExpress from "swagger-ui-express"
 
 const PORT = config.PORT;
 const MONGO_URL = config.MONGO_URL;
@@ -67,9 +67,8 @@ app.use("/api/carts", cartsRouter.getRouter());
 app.use("/api/sessions", sessionsRouter.getRouter());
 app.use("/mockingproducts", mocksRouter.getRouter());
 app.use("/api/users", usersRouter.getRouter());
-app.use("/", viewsRouter.getRouter());
-
 app.use('/apidocs', swaggerUiExpress.serve, swaggerUiExpress.setup(specs));
+app.use("/", viewsRouter.getRouter());
 
 
 const serverExpress = app.listen(PORT, () => {
