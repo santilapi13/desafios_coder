@@ -27,8 +27,8 @@ async function createCart(req, res) {
             products
         }
 
-        let resultado = await cartsService.create(cart);
-        res.sendSuccess(`Cart created successfully: ${resultado}`);
+        let resultado = await cartsService.createCart(cart);
+        res.sendSuccess(resultado);
     } catch (error) {
         req.logger.error("Cart creation error: " + error.message);
         res.sendServerError(error.message);
@@ -88,7 +88,7 @@ async function addProductToCart(req, res) {
             resultado = await cartsService.createProductInCart(cid, newProduct);
         }
 
-        res.sendSuccess(`Product added to cart ${cart} successfully: ${resultado}`);
+        res.sendSuccess(resultado);
     } catch (error) {
         req.logger.error("Product addition to cart error: " + error.message);
         res.sendServerError(error.message);
