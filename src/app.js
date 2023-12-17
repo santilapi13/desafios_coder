@@ -22,6 +22,7 @@ import { addLogger } from './utils/logger.js';
 
 import swaggerJsdoc from "swagger-jsdoc";
 import swaggerUiExpress from "swagger-ui-express"
+import cors from 'cors';
 
 const PORT = config.PORT;
 const MONGO_URL = config.MONGO_URL;
@@ -50,6 +51,7 @@ const usersRouter = new UsersRouter();
 
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
+app.use(cors());
 app.use(express.static(__dirname + '/public'));
 
 app.use(cookieParser());
@@ -69,7 +71,6 @@ app.use("/mockingproducts", mocksRouter.getRouter());
 app.use("/api/users", usersRouter.getRouter());
 app.use('/apidocs', swaggerUiExpress.serve, swaggerUiExpress.setup(specs));
 app.use("/", viewsRouter.getRouter());
-
 
 const serverExpress = app.listen(PORT, () => {
     console.log(`Server corriendo en puerto ${PORT}`);
