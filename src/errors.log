@@ -7,3 +7,12 @@
 {"level":"error","message":"Changing santilapiana02@gmail.com password: Cannot access 'user' before initialization","timestamp":"2023-12-07T15:17:10.372Z"}
 {"level":"error","message":"Changing santilapiana02@gmail.com password: usersModel.update is not a function","timestamp":"2023-12-07T15:18:09.255Z"}
 {"level":"error","message":"Logout error: Cannot set headers after they are sent to the client","timestamp":"2023-12-07T16:56:56.464Z"}
+{"level":"error","message":"Product post error: E11000 duplicate key error collection: test.products index: code_1 dup key: { code: \"123456\" }","timestamp":"2023-12-17T19:48:12.962Z"}
+{"level":"error","message":"Product post error: E11000 duplicate key error collection: test.products index: code_1 dup key: { code: \"123456\" }","timestamp":"2023-12-17T19:50:59.851Z"}
+{"level":"error","message":"Product post error: E11000 duplicate key error collection: test.products index: code_1 dup key: { code: \"123456\" }","timestamp":"2023-12-17T19:55:04.572Z"}
+{"level":"error","message":"Product post error: E11000 duplicate key error collection: test.products index: code_1 dup key: { code: \"123456\" }","timestamp":"2023-12-17T20:01:19.057Z"}
+{"level":"error","message":"Product post error: E11000 duplicate key error collection: test.products index: code_1 dup key: { code: \"123456\" }","timestamp":"2023-12-17T20:06:05.849Z"}
+{"level":"error","message":"Product post error: E11000 duplicate key error collection: test.products index: code_1 dup key: { code: \"123456\" }","timestamp":"2023-12-17T20:09:42.172Z"}
+{"level":"error","message":"Product post error: E11000 duplicate key error collection: test.products index: code_1 dup key: { code: \"123456\" }","timestamp":"2023-12-17T20:10:20.963Z"}
+{"level":"error","message":"Cart creation error: cartsService.create is not a function","timestamp":"2023-12-17T21:48:46.273Z"}
+{"level":"error","message":"Cart creation error: cartsService.create is not a function","timestamp":"2023-12-17T21:50:05.575Z"}
