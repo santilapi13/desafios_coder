@@ -26,13 +26,14 @@ export class ProductsMongoDAO {
         }
     }
 
-    async get(filter = {}, query = {}) {
-        if (filter['_id'] && !mongoose.Types.ObjectId.isValid(filter['_id']))
+    async get(query = {}, filter = {}) {
+        if (query['_id'] && !mongoose.Types.ObjectId.isValid(query['_id']))
             throw new Error("Invalid id");
 
         filter.lean = true;
 
         let result = await productModel.paginate(query, filter);
+        if (query['code']) console.log(result);
         
         if (filter['page']) {
             const maxPages = result.totalPages;
@@ -52,7 +53,7 @@ export class ProductsMongoDAO {
         if (!mongoose.Types.ObjectId.isValid(id))
             throw new Error("Invalid id");
 
-        return await productModel.findByIdAndUpdate(id, product);
+        return await productModel.findByIdAndUpdate({ _id: id }, product, { new: true });
     }
 
     async delete(filter) {

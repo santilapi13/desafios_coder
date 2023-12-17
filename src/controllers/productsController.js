@@ -89,14 +89,14 @@ async function postProduct(req, res) {
         return res.sendUserError(error.message);
     }
 
-    let codeProduct = await productsService.getProductByCode(product.code);
+    let codeProduct = await productsService.getProductByCode(code);
     if (codeProduct)
-        return res.sendUserError(`Product code ${product.code} already exists`);
+        return res.sendUserError(`Product code ${code} already exists`);
 
     try {
         let newProduct = await productsService.createProduct(product);
         io.emit('list-updated', {products: await productsService.getProducts(), msg: `Product ${product.title} added.`});
-        res.sendSuccess(`Product ${newProduct} added successfully`);
+        res.sendSuccess(newProduct);
     } catch (error) {
         req.logger.error("Product post error: " + error.message);
         res.sendServerError(error.message);
@@ -148,7 +148,7 @@ async function putProduct(req, res) {
     try {
         let result = await productsService.updateProduct(pid, productToUpdate);
         io.emit('list-updated', {products: await productsService.getProducts(), msg: `Product with id ${pid} updated.`});
-        res.sendSuccess(`Product with id ${pid} updated successfully: ${result}`);
+        res.sendSuccess(result);
     } catch (error) {
         req.logger.error("Product update error: " + error.message);
         res.sendServerError(error.message);

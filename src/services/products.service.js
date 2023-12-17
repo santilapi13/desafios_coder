@@ -10,17 +10,20 @@ class ProductsService {
     }
 
     async getFilteredProducts(query, limit, page, sort) {
-        return await this.dao.get({limit, page, sort}, query);
+        const filters = { limit, page, sort };
+        return await this.dao.get(query, filters);
     }
 
     async getProductById(id) {
-        const product = await this.dao.get({_id:id})
-        return product ? product[0] : null;
+        const query = { _id:id };
+        const product = await this.dao.get(query);
+        return product ? product.docs[0] : null;
     }
 
     async getProductByCode(code) {
-        const product = await this.dao.get({code:code})
-        return product ? product[0] : null;
+        const query = { code:code };
+        let product = await this.dao.get(query);
+        return product ? product.docs[0] : null;
     }
 
     async createProduct(product) {
