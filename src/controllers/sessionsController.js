@@ -16,7 +16,7 @@ async function login(req, res) {
             httpOnly:true
         });
 
-        res.status(200).redirect("/products");
+        res.sendSuccess(user);
     } catch (error) {
         req.logger.error("Login error: " + error.message);
         res.sendServerError(error.message);
@@ -33,7 +33,8 @@ async function github(req, res) {
             httpOnly:true
         });
 
-        res.redirect('/products');
+        res.sendSuccess(user);
+        //res.redirect('/products');
     } catch (error) {
         req.logger.error("Github login error: " + error.message);
         res.sendServerError(error.message);

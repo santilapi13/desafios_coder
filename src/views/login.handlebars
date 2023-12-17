@@ -1,8 +1,8 @@
 <h2>Login de usuarios</h2>
 <hr>
-<form action="/api/sessions/login" method="post">
-    <input type="email" name="email" placeholder="email">
-    <input type="password" name="password" placeholder="password">
+<form id="loginForm" action="/api/sessions/login" method="post">
+    <input type="email" id="email" name="email" placeholder="email">
+    <input type="password" id="password" name="password" placeholder="password">
 
     {{#if invalidCredentials}}
         <p><font color="red">Credenciales invalidas. Intente de nuevo.</font></p>
@@ -14,7 +14,9 @@
 </form>
 
 <div>
-    <a href="/api/sessions/github"><button>Entrar con GitHub</button></a>
+    <button id="githubLogin">Entrar con GitHub</button>
 </div>
 <br>
 {{>menu}}
+
+<script src="/assets/scripts/loginForm.js"></script>
