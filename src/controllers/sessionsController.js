@@ -34,7 +34,6 @@ async function github(req, res) {
         });
 
         res.sendSuccess(user);
-        //res.redirect('/products');
     } catch (error) {
         req.logger.error("Github login error: " + error.message);
         res.sendServerError(error.message);
@@ -44,7 +43,8 @@ async function github(req, res) {
 async function logout(req, res) {
     try {
         res.clearCookie('coderCookie');
-        res.redirect("/login?message=Logged out successfully.");
+        res.sendSuccess("Logged out successfully.");
+        //res.redirect("/login?message=Logged out successfully.");
     } catch (error) {
         req.logger.error("Logout error: " + error.message);
         res.sendServerError(error.message);
