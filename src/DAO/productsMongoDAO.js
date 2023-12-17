@@ -33,7 +33,6 @@ export class ProductsMongoDAO {
         filter.lean = true;
 
         let result = await productModel.paginate(query, filter);
-        if (query['code']) console.log(result);
         
         if (filter['page']) {
             const maxPages = result.totalPages;
