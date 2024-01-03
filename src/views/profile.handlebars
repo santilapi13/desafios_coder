@@ -4,6 +4,20 @@
     <li>age: {{age}}</li>
 </ul>
 
+<h2>Cargar documento:</h2>
+<form action="/api/users/{{uid}}/documents" method="post" enctype="multipart/form-data">
+    <input type="file" name="document" />
+    <select name="type">
+        <option value="profile">Foto de perfil</option>
+        <option value="ID">DNI</option>
+        <option value="proof of address">Comprobante de domicilio</option>
+        <option value="proof of account status">Comprobante de estado de cuenta</option>
+        <option value="document">Otro documento</option>
+    </select>
+
+    <input type="submit" value="Cargar">
+</form>
+
 <ul class="menu">
     <a id="cart-id" href="/carts/{{cart}}">Ver carrito</a>
     <a href="/products">Ver productos</a>
