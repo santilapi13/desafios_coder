@@ -15,7 +15,8 @@ async function getProfile(req, res) {
         email,
         age,
         logged: true,
-        cart: req.user.cart._id
+        cart: req.user.cart._id,
+        uid: req.user._id
     });
 }
 

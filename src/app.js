@@ -42,17 +42,17 @@ const specs = swaggerJsdoc(swaggerOptions);
 
 const app = express();
 
+app.use(express.json());
+app.use(express.urlencoded({extended:true}));
+app.use(cors());
+app.use(express.static(__dirname + '/public'));
+
 const productsRouter = new ProductsRouter();
 const cartsRouter = new CartsRouter();
 const sessionsRouter = new SessionsRouter();
 const viewsRouter = new ViewsRouter();
 const mocksRouter = new MocksRouter();
 const usersRouter = new UsersRouter();
-
-app.use(express.json());
-app.use(express.urlencoded({extended:true}));
-app.use(cors());
-app.use(express.static(__dirname + '/public'));
 
 app.use(cookieParser());
 initializePassport();

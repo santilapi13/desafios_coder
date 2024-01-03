@@ -3,6 +3,9 @@ import { config } from '../config/dotenv.config.js';
 import { usersService } from "../services/users.service.js";
 import { createHash } from "../util.js";
 import { generateJWT } from '../util.js';
+import fs from 'fs';
+import path from 'path';
+import __dirname from '../util.js';
 
 async function getUsers(req, res) {
     try {
@@ -108,6 +111,17 @@ async function premium(req, res) {
         if (user.role === "admin")
             return res.sendUserError("Admins can't get their role changed.");
 
+        if (user.role === "user") {
+            const validator = ["ID", "proof of address", "proof of account status"];
+            let error = false;
+            validator.forEach(element => {
+                error = error || !user.documents.find(document => document.name === element);
+            });
+            if (error) {
+                return res.sendUserError(`ID, proof of address and proof of account status documents are necessary before switching to premium account.`);
+            }
+        }
+
         req.logger.debug(`Changing ${uid} role from ${user.role} to ${user.role === "user" ? "premium" : "user"}`);
 
         user = await usersService.updateUser(uid, { role: user.role === "user" ? "premium" : "user" });
@@ -120,4 +134,50 @@ async function premium(req, res) {
     return res.sendSuccess("Role changed.");
 }
 
-export default { restorePassword, newPassword, premium, getUsers }
+function determineDestinationFolder(type) {
+    switch (type) {
+        case 'profile':
+            return 'src/uploads/profiles';
+        case 'product':
+            return 'src/uploads/products';
+        default:
+            return 'src/uploads/documents';
+    }
+}
+
+async function addDocument(req, res) {
+    const { uid } = req.params;
+    const { type } = req.body;
+
+    if (!req.file)
+        return res.sendUserError("Missing document.");
+
+    try {
+        let user = await usersService.getUserById(uid);
+        if (!user) {
+            return res.sendUserError("User not found.");
+        }
+
+        const sourcePath = req.file.path;
+        const destinationFolder = determineDestinationFolder(type);
+        const destinationPath = path.join(__dirname, '..', destinationFolder, req.file.filename);
+
+        fs.renameSync(sourcePath, destinationPath);
+
+        let newDocuments = user.documents;
+        newDocuments.push({
+            name: type,
+            reference: destinationPath
+        });
+
+        user = await usersService.updateUser(uid, { documents: newDocuments });
+
+    } catch (error) {
+        req.logger.error(`Adding document to ${uid}: ` + error.message);
+        return res.sendServerError(error.message);
+    }
+
+    return res.sendSuccess("Document added.");
+}
+
+export default { restorePassword, newPassword, premium, getUsers, addDocument }
