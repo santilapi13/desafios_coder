@@ -16,3 +16,7 @@
 {"level":"error","message":"Product post error: E11000 duplicate key error collection: test.products index: code_1 dup key: { code: \"123456\" }","timestamp":"2023-12-17T20:10:20.963Z"}
 {"level":"error","message":"Cart creation error: cartsService.create is not a function","timestamp":"2023-12-17T21:48:46.273Z"}
 {"level":"error","message":"Cart creation error: cartsService.create is not a function","timestamp":"2023-12-17T21:50:05.575Z"}
+{"level":"error","message":"Adding document to 654e8cc12933f3d7ab20b50a: path is not defined","timestamp":"2024-01-03T17:08:05.801Z"}
+{"level":"error","message":"Adding document to 654e8cc12933f3d7ab20b50a: __dirname is not defined","timestamp":"2024-01-03T17:08:48.245Z"}
+{"level":"error","message":"Adding document to 654e8cc12933f3d7ab20b50a: ENOENT: no such file or directory, rename 'C:\\Users\\Lapiana\\Desktop\\Santi\\Programacion\\desafios_coder\\src\\uploads\\documents\\654e8cc12933f3d7ab20b50a-1704301753345-571340372-WhatsApp Image 2022-08-25 at 12.16.17 PM.jpg' -> 'C:\\Users\\Lapiana\\Desktop\\Santi\\Programacion\\desafios_coder\\uploads\\profiles\\654e8cc12933f3d7ab20b50a-1704301753345-571340372-WhatsApp Image 2022-08-25 at 12.16.17 PM.jpg'","timestamp":"2024-01-03T17:09:16.301Z"}
+{"level":"error","message":"Changing 654e8cc12933f3d7ab20b50a role: Cannot set headers after they are sent to the client","timestamp":"2024-01-03T17:29:05.236Z"}
