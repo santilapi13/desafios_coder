@@ -1,6 +1,9 @@
 import { productsService } from '../services/products.service.js';
+import { config } from '../config/dotenv.config.js';
+import nodemailer from 'nodemailer'
 import {io} from "../app.js";
 import ProductDTO from '../DAO/DTOs/product.dto.js';
+import { usersService } from '../services/users.service.js';
 
 async function getProducts(req, res) {
     res.setHeader("Content-Type", "application/json");
@@ -155,6 +158,28 @@ async function putProduct(req, res) {
     }
 }
 
+const transport = nodemailer.createTransport({
+    service:'gmail',
+    port: 587,
+    auth: {
+        user: config.MAILER_USER,
+        pass: config.MAILER_PASS
+    }
+})
+
+async function sendDeletedProductEmail(product) {
+    const productOwner = await usersService.getUserById(product.owner);
+    transport.sendMail({
+        from: "Notificador " + config.MAILER_USER,
+        to: productOwner.email,
+        subject: "Producto eliminado",
+        html: `
+                <h1>Producto ${product.title} eliminado del sistema</h1>
+                <p>Se borró su producto del sistema: ${product}</p>
+            `
+    });
+}
+
 async function deleteProduct(req, res) {
     res.setHeader("Content-Type", "application/json");
     let {pid} = req.params;
@@ -169,6 +194,9 @@ async function deleteProduct(req, res) {
 
     try {
         let result = await productsService.deleteProduct(pid);
+
+        await sendDeletedProductEmail(productToDelete);
+
         io.emit('list-updated', {products: await productsService.getProducts(), msg: `Product with id ${pid} deleted.`});
         res.sendSuccess(`Product with id ${pid} deleted successfully: ${result}`);
     } catch (error) {

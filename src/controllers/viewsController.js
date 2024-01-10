@@ -94,7 +94,8 @@ async function getProductById(req, res) {
 
         const product = pidValidation.product;
 
-        let {title, price, description, code, category, stock} = product;
+        let {title, price, description, code, category, stock, owner} = product;
+        owner = await usersService.getUserById(owner);
         res.renderSuccess("product", {
             title,
             price,
@@ -102,6 +103,7 @@ async function getProductById(req, res) {
             code,
             category,
             stock,
+            owner: owner.first_name + " " + owner.last_name,
             id: pid,
             logged: true,
             isUser: req.user.role === 'user',

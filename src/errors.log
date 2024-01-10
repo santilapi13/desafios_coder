@@ -22,3 +22,4 @@
 {"level":"error","message":"Changing 654e8cc12933f3d7ab20b50a role: Cannot set headers after they are sent to the client","timestamp":"2024-01-03T17:29:05.236Z"}
 {"level":"error","message":"Getting users view: usersService is not defined","timestamp":"2024-01-10T16:28:19.325Z"}
 {"level":"error","message":"Deleting inactive users: users is not defined","timestamp":"2024-01-10T17:16:44.989Z"}
+{"level":"error","message":"Product deletion error: usersService is not defined","timestamp":"2024-01-10T19:09:48.057Z"}
