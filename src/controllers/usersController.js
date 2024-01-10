@@ -8,17 +8,23 @@ import path from 'path';
 import __dirname from '../util.js';
 
 async function getUsers(req, res) {
+    let users;
+
     try {
-        const users = await usersService.getUsers();
+        users = await usersService.getUsers();
         if (!users) {
             return res.sendUserError("Users not found.");
         }
-
-        return res.sendSuccess(users);
+        users.forEach(user => {
+            delete user.password;
+            delete user._id;
+        });
     } catch (error) {
         req.logger.error(`Getting users: ` + error.message);
         return res.sendServerError(error.message);
     }
+
+    res.sendSuccess(users);
 }
 
 const transport = nodemailer.createTransport({
