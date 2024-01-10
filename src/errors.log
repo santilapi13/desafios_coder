@@ -20,3 +20,5 @@
 {"level":"error","message":"Adding document to 654e8cc12933f3d7ab20b50a: __dirname is not defined","timestamp":"2024-01-03T17:08:48.245Z"}
 {"level":"error","message":"Adding document to 654e8cc12933f3d7ab20b50a: ENOENT: no such file or directory, rename 'C:\\Users\\Lapiana\\Desktop\\Santi\\Programacion\\desafios_coder\\src\\uploads\\documents\\654e8cc12933f3d7ab20b50a-1704301753345-571340372-WhatsApp Image 2022-08-25 at 12.16.17 PM.jpg' -> 'C:\\Users\\Lapiana\\Desktop\\Santi\\Programacion\\desafios_coder\\uploads\\profiles\\654e8cc12933f3d7ab20b50a-1704301753345-571340372-WhatsApp Image 2022-08-25 at 12.16.17 PM.jpg'","timestamp":"2024-01-03T17:09:16.301Z"}
 {"level":"error","message":"Changing 654e8cc12933f3d7ab20b50a role: Cannot set headers after they are sent to the client","timestamp":"2024-01-03T17:29:05.236Z"}
+{"level":"error","message":"Getting users view: usersService is not defined","timestamp":"2024-01-10T16:28:19.325Z"}
+{"level":"error","message":"Deleting inactive users: users is not defined","timestamp":"2024-01-10T17:16:44.989Z"}

@@ -186,7 +186,7 @@ async function addDocument(req, res) {
     return res.sendSuccess("Document added.");
 }
 
-function deleteUsersBeforeTime(time) {
+function deleteUsersBeforeTime(users, time) {
     let deletedUsers = [];
 
     users.forEach(async user => {
@@ -222,7 +222,7 @@ async function deleteInactiveUsers(req, res) {
         if (!users) return res.sendUserError("Users not found.");
 
         const time = 1000*60*60*24*2;   // 2 days
-        deletedUsers = deleteUsersBeforeTime(time);
+        deletedUsers = deleteUsersBeforeTime(users, time);
 
         sendDeletedAccountEmail(deletedUsers);
     } catch (error) {
@@ -233,4 +233,25 @@ async function deleteInactiveUsers(req, res) {
     return res.sendSuccess(deletedUsers);
 }
 
-export default { restorePassword, newPassword, premium, getUsers, addDocument, deleteInactiveUsers }
+async function deleteUser(req, res) {
+    const { uid } = req.params;
+    let user;
+
+    try {
+        user = await usersService.getUserById(uid);
+        if (!user) {
+            return res.sendUserError("User not found.");
+        }
+
+        user = await usersService.deleteUser(uid);
+
+    } catch (error) {
+        req.logger.error(`Deleting ${uid}: ` + error.message);
+        return res.sendServerError(error.message);
+    }
+
+    return res.sendSuccess(user);
+
+}
+
+export default { restorePassword, newPassword, premium, getUsers, addDocument, deleteInactiveUsers, deleteUser }

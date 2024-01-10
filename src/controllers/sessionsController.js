@@ -1,4 +1,5 @@
 import { generateJWT } from '../util.js';
+import { usersService } from '../services/users.service.js';
 
 async function register(req, res) {
     let { email } = req.body;
@@ -16,6 +17,7 @@ async function login(req, res) {
             httpOnly:true
         });
 
+        await usersService.updateUser(req.user._id, { last_connection: new Date() });
         res.sendSuccess(user);
     } catch (error) {
         req.logger.error("Login error: " + error.message);
@@ -33,6 +35,7 @@ async function github(req, res) {
             httpOnly:true
         });
 
+        await usersService.updateUser(req.user._id, { last_connection: new Date() });
         res.sendSuccess(user);
     } catch (error) {
         req.logger.error("Github login error: " + error.message);

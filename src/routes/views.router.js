@@ -48,6 +48,8 @@ export class ViewsRouter extends Router {
             res.send("Check the console");
         })
 
+        this.get('/users', ["ADMIN"], nonAuthenticated, viewsController.getUsers);
+
         this.get('*', ["PUBLIC"], viewsController.getNotFound);
     }
 }

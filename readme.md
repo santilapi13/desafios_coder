@@ -37,5 +37,9 @@ Todos los usuarios en su vista profile pueden cargar documentos (seleccionando e
 en una carpeta uploads dentro de src, y se distribuyen en 3 subcarpetas: profiles, products y documents, según corresponda (cómo no lo pedía, las imágenes de productos aún no se pueden cargar).
 Ahora, para cambiar una cuenta a premium el usuario debe tener cargados su DNI, comprobante de domicilio y comprobante de estado de cuenta. Si no los tiene, no se le permite al admin cambiar su cuenta a premium.
 
+## Probar rutas en /api/users de entrega final
+Al estar logueado con la cuenta admin, se puede hacer un GET en /api/users que retorna todos los usuarios. Además, DELETE en /api/users eliminar todos los usuarios cuya última conexión es de hace más de 2 días (se lo notifica con un email). También se puede hacer un DELETE en /api/users/:uid para eliminar un usuario en particular. Por último, puede cambiársele el rol a un usuario con un PUT en /api/users/premium/:uid pero solo si el usuario tiene cargados sus documentos (puede probarse con el usuario Santiago Lapiana, que tiene cargados sus documentos).
+**Todo esto puede probarse en http://localhost:8080/users al estar logueado como admin**
+
 # TODO
 - Corregir tema de variables de entorno al ejecutar node ./src/app.js vs node ./app.js (ver si se puede hacer que funcione con el primero).

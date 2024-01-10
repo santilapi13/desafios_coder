@@ -1,0 +1,24 @@
+<h2>Administración de usuarios</h2>
+<button id="btn-delete-inactives">Eliminar inactivos</button>
+<hr>
+
+<ol id="users">
+    {{#each users}}
+        <li>
+            <ul class="menu">
+                <li><b>Usuario: </b>{{this.last_name}}, {{this.first_name}}</li><br>
+                <li><b>Email: </b>{{this.email}}</li><br>
+                <li><b>Rol: </b>{{this.role}}</li><br>
+                <li><b>Última conexión: </b> {{this.last_connection}}</li><br>
+                <li><button class="btn-change-role" user-id="{{this._id}}">Cambiar rol</button></li>
+                <li><button class="btn-delete" user-id="{{this._id}}">Eliminar</button></li>
+            </ul>
+            <br>
+        </li>
+    {{/each}}
+</ol>
+
+<br>
+{{>menu}}
+
+<script src="/assets/scripts/users.js"></script>

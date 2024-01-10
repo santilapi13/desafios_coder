@@ -1,5 +1,6 @@
 import { productsService } from '../services/products.service.js';
 import { cartsService } from '../services/carts.service.js';
+import { usersService } from '../services/users.service.js';
 
 async function getHome(req, res) {
     const logged = req.user ? true : false;
@@ -193,4 +194,18 @@ async function getRestorePassword(req, res) {
     res.renderSuccess("restorePassword");
 }
 
-export default { getHome, getProfile, getProducts, getProductById, getCartById, getRegister, getLogin, getNotFound, getRestorePassword, getForgotPassword };
+async function getUsers(req, res) {
+    let users;
+    try {
+        users = await usersService.getUsers();
+        users = users.filter(user => user.role !== 'admin');
+    } catch (error) {
+        req.logger.error(`Getting users view: ` + error.message);
+        res.renderServerError("notfound", {msg: error.message});
+    }
+
+    const sanitizedUsers = users.map(user => ({ _id: user._id, last_name: user.last_name, first_name: user.first_name, email: user.email, role: user.role, last_connection: user.last_connection }));
+    res.renderSuccess("users", { users: sanitizedUsers, logged: true });
+}
+
+export default { getHome, getProfile, getProducts, getProductById, getCartById, getRegister, getLogin, getNotFound, getRestorePassword, getForgotPassword, getUsers };
