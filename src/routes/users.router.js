@@ -42,5 +42,7 @@ export class UsersRouter extends Router {
         this.put('/premium/:uid', ["ADMIN"], usersController.premium);
 
         this.post('/:uid/documents', ["ADMIN", "USER", "PREMIUM"], upload.single("document"), usersController.addDocument);
+
+        this.delete('/', ["ADMIN"], usersController.deleteInactiveUsers);
     }
 }

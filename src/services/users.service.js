@@ -34,6 +34,10 @@ class UsersService {
     async updateUser(id, changes) {
         return await this.dao.update(id, changes);
     }
+
+    async deleteUser(id) {
+        return await this.dao.delete(id);
+    }
 }
 
 export const usersService = new UsersService(DAO);

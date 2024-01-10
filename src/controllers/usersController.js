@@ -186,4 +186,51 @@ async function addDocument(req, res) {
     return res.sendSuccess("Document added.");
 }
 
-export default { restorePassword, newPassword, premium, getUsers, addDocument }
+function deleteUsersBeforeTime(time) {
+    let deletedUsers = [];
+
+    users.forEach(async user => {
+        if (user.role === "user" && user.last_connection < new Date(Date.now() - time)) {
+            await usersService.deleteUser(user._id);
+        }
+        deletedUsers.push(user);
+    });
+
+    return deletedUsers;
+}
+
+function sendDeletedAccountEmail(deletedUsers) {
+    deletedUsers.forEach(user => {
+        transport.sendMail({
+            from: "Notificador " + config.MAILER_USER,
+            to: user.email,
+            subject: "Cuenta borrada por inactividad",
+            html: `
+                <h1>Cuenta borrada</h1>
+                <p>Se borró su cuenta  de nuestro e-commerce por inactividad en las últimas 48 hs.</p>
+            `
+        });
+    });
+}
+
+async function deleteInactiveUsers(req, res) {
+    let users;
+    let deletedUsers = [];
+
+    try {
+        users = await usersService.getUsers();
+        if (!users) return res.sendUserError("Users not found.");
+
+        const time = 1000*60*60*24*2;   // 2 days
+        deletedUsers = deleteUsersBeforeTime(time);
+
+        sendDeletedAccountEmail(deletedUsers);
+    } catch (error) {
+        req.logger.error(`Deleting inactive users: ` + error.message);
+        return res.sendServerError(error.message);
+    }
+
+    return res.sendSuccess(deletedUsers);
+}
+
+export default { restorePassword, newPassword, premium, getUsers, addDocument, deleteInactiveUsers }
